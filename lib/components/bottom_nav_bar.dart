@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
-  final int selectedIndex;
+  final int? selectedIndex; // ✅ make it nullable
   final Function(int) onItemTapped;
 
   const CustomBottomNavBar({
     Key? key,
-    required this.selectedIndex,
+    this.selectedIndex,
     required this.onItemTapped,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color(0xFF2B2C42), // Dark background
+      color: const Color(0xFF2B2C42),
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Navigation items
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -37,7 +36,6 @@ class CustomBottomNavBar extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          // White bar
           Center(
             child: Container(
               width: 60,

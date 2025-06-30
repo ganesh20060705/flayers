@@ -14,37 +14,53 @@ class CustomBackActionsAppBar extends StatelessWidget implements PreferredSizeWi
   Widget build(BuildContext context) {
     return SafeArea(
       bottom: false,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(
-            height: 56,
-            child: Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.black),
-                  onPressed: onBack ?? () => Navigator.pop(context),
-                ),
-                const Spacer(),
-                IconButton(
-                  icon: const Icon(Icons.more_vert, color: Colors.black),
-                  onPressed: onMore ?? () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('More tapped!')),
-                    );
-                  },
-                ),
-              ],
+      child: Container(
+        color: Colors.white, // ✅ AppBar background color
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              height: 56,
+              child: Row(
+                children: [
+                  // ✅ Back icon + text
+                  TextButton.icon(
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.black,
+                    ),
+                    icon: const Icon(Icons.arrow_back, color: Colors.black),
+                    label: const Text(
+                      'Back',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
+                      ),
+                    ),
+                    onPressed: onBack ?? () => Navigator.pop(context),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    icon: const Icon(Icons.more_vert, color: Colors.black),
+                    onPressed: onMore ??
+                        () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('More tapped!')),
+                          );
+                        },
+                  ),
+                ],
+              ),
             ),
-          ),
-          const Divider(
-            color: Colors.black,
-            height: 1,
-            thickness: 2,
-            indent: 16,    // <-- indent from left
-            endIndent: 16, // <-- indent from right
-          ),
-        ],
+            const Divider(
+              color: Colors.black,
+              height: 1,
+              thickness: 2,
+              indent: 16,
+              endIndent: 16,
+            ),
+          ],
+        ),
       ),
     );
   }

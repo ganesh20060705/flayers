@@ -109,7 +109,7 @@ class HomeContent extends StatelessWidget {
             textColor: Colors.white,
             buttonTextColor: Colors.black, // Text color for button only
           ),
-          const SizedBox(height: 25),
+          const SizedBox(height: 20),
           buildCard(
             title: "Join Existing Match",
             description:
@@ -121,7 +121,7 @@ class HomeContent extends StatelessWidget {
             showTextField: true,
             buttonTextColor: Colors.white,
           ),
-          const SizedBox(height: 25),
+          const SizedBox(height: 20),
           buildCard(
             title: "Match History",
             description:

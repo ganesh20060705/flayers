@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       
-      home:TossDetails() ,
+      home:NewMatchPage(),
     );
   }
 }

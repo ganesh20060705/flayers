@@ -1,5 +1,6 @@
 import 'package:flayer/pages/home_page.dart';
 import 'package:flayer/pages/new_match_details.dart';
+import 'package:flayer/pages/toss_details.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       
-      home:HomePage() ,
+      home:TossDetails() ,
     );
   }
 }

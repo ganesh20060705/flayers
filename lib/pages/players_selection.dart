@@ -127,7 +127,7 @@ class _PlayersSelectionState extends State<PlayersSelection> {
                           'Bowling Team : Team 2',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 17,
+                            fontSize: 20,
                           ),
                         ),
 

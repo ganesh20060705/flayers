@@ -174,7 +174,7 @@ class _TeamSetupScreenState extends State<TeamSetupScreen> {
                               const SizedBox(width: 12),
 
                               Container(
-                                width: 150,
+                                width: 160,
                                 height: 40,
                                 child: CustomDropdown(
                                   value: player.role,

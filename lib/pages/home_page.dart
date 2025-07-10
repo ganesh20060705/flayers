@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flayer/components/bottom_nav_bar.dart';
+import 'package:flayer/components/customnext_button.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -39,7 +40,6 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-// ✅ Custom App Bar
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key});
 
@@ -58,14 +58,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         ],
       ),
-
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 16),
           child: GestureDetector(
-            onTap: () {
-              // Optional: handle tap on notification icon
-            },
+            onTap: () {},
             child: Image.asset(
               'lib/assets/notification.png',
               width: 45,
@@ -74,7 +71,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         ),
       ],
-
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1),
         child: Padding(
@@ -89,17 +85,23 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   Size get preferredSize => const Size.fromHeight(kToolbarHeight + 1);
 }
 
-// ✅ HomeContent Widget
 class HomeContent extends StatelessWidget {
   const HomeContent({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.symmetric(
+        horizontal: screenWidth * 0.05, // 5% of screen width
+        vertical: screenHeight * 0.02,  // 2% of screen height
+      ),
       child: Column(
         children: [
           buildCard(
+            context: context,
             title: "Start a New Match",
             description:
                 "Create and score a new cricket match. Share the match code with others so they can follow along.",
@@ -107,10 +109,11 @@ class HomeContent extends StatelessWidget {
             buttonText: "Start Match",
             buttonColor: const Color(0xFFD4FF4F),
             textColor: Colors.white,
-            buttonTextColor: Colors.black, // Text color for button only
+            buttonTextColor: Colors.black,
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: screenHeight * 0.02),
           buildCard(
+            context: context,
             title: "Join Existing Match",
             description:
                 "Enter a match code shared by a scorer to view the live match.",
@@ -118,19 +121,20 @@ class HomeContent extends StatelessWidget {
             buttonText: "Join Match",
             buttonColor: Colors.black,
             textColor: Colors.white,
-            showTextField: true,
             buttonTextColor: Colors.white,
+            showTextField: true,
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: screenHeight * 0.02),
           buildCard(
+            context: context,
             title: "Match History",
             description:
-                "All Match History and recently played match list in one place",
+                "All Match History and recently played match list in one place.",
             color: const Color(0xFF23CE6B),
             buttonText: "View History",
             buttonColor: Colors.black,
-            textColor: Colors.white, // Title & description in black
-            buttonTextColor: Colors.white, // Only button text in white
+            textColor: Colors.white,
+            buttonTextColor: Colors.white,
           ),
         ],
       ),
@@ -138,6 +142,7 @@ class HomeContent extends StatelessWidget {
   }
 
   Widget buildCard({
+    required BuildContext context,
     required String title,
     required String description,
     required Color color,
@@ -187,72 +192,27 @@ class HomeContent extends StatelessWidget {
                   hintText: "ENTER MATCH CODE",
                   hintStyle: TextStyle(
                     color: Color.fromRGBO(0, 0, 0, 0.6),
-                    fontWeight: FontWeight.w800, // ⬅ 60% opaque black
+                    fontWeight: FontWeight.w800,
                   ),
                   border: InputBorder.none,
                 ),
               ),
             ),
-
           const SizedBox(height: 8),
-          SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: buttonColor,
-                foregroundColor: buttonTextColor ?? Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18),
-                  side: BorderSide(
-                    color: (buttonText == "Start Match" || showTextField)
-                        ? Colors.black
-                        : Colors.transparent,
-                    width: (buttonText == "Start Match" || showTextField)
-                        ? 1.5
-                        : 0,
-                  ),
-                ),
-              ),
-              child: Text(
-                buttonText,
-                style: TextStyle(
-                  fontSize: 16, // 👈 Increase as needed (default is usually 14–16)
-                  color:
-                      buttonTextColor ??
-                      (showTextField ? Colors.white : Colors.black),
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
+
+          // ✅ Use your custom button
+          CustomNextButton(
+            onPressed: () {
+              if (buttonText == "Start Match") {
+                Navigator.pushNamed(context, '/new_match_details');
+              } else {
+                // Other actions as needed
+              }
+            },
+            label: buttonText,
           ),
         ],
       ),
     );
   }
-}
-
-Widget navItem({
-  required IconData icon,
-  required String label,
-  required bool isSelected,
-  required VoidCallback onTap,
-}) {
-  return GestureDetector(
-    onTap: onTap,
-    child: Column(
-      children: [
-        Icon(icon, color: isSelected ? const Color(0xFFD4FF4F) : Colors.white),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? const Color(0xFFD4FF4F) : Colors.white,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
-    ),
-  );
 }

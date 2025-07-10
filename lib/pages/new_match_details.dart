@@ -22,6 +22,8 @@ class _NewMatchPageState extends State<NewMatchPage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       appBar: const CustomBackActionsAppBar(),
       body: Stack(
@@ -36,91 +38,89 @@ class _NewMatchPageState extends State<NewMatchPage> {
             child: SingleChildScrollView(
               child: ConstrainedBox(
                 constraints: BoxConstraints(
-                  minHeight: MediaQuery.of(context).size.height -
+                  minHeight: screenHeight -
                       kToolbarHeight -
                       MediaQuery.of(context).padding.top -
                       MediaQuery.of(context).padding.bottom -
-                      60,
+                      kBottomNavigationBarHeight,
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: screenHeight * 0.03, // Responsive vertical padding
+                  ),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Center(
                         child: Text(
                           'New Match Details',
                           style: TextStyle(
-                            fontSize: 30,
+                            fontSize: 28,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
 
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Over per innings',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          CustomDropdown(
-                            value: selectedOver,
-                            items: overs,
-                            onChanged: (value) {
-                              setState(() {
-                                selectedOver = value;
-                              });
-                            },
-                          ),
-                        ],
-                      ),
+                      SizedBox(height: screenHeight * 0.04),
 
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const LabelWithEdit(label: 'Select Team 1'),
-                          const SizedBox(height: 8),
-                          CustomDropdown(
-                            value: selectedTeam1,
-                            hint: 'Select Team 1',
-                            items: teams,
-                            onChanged: (value) {
-                              setState(() {
-                                selectedTeam1 = value;
-                              });
-                            },
-                          ),
-                        ],
+                      const Text(
+                        'Over per innings',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
                       ),
-
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const LabelWithEdit(label: 'Select Team 2'),
-                          const SizedBox(height: 8),
-                          CustomDropdown(
-                            value: selectedTeam2,
-                            hint: 'Select Team 2',
-                            items: teams,
-                            onChanged: (value) {
-                              setState(() {
-                                selectedTeam2 = value;
-                              });
-                            },
-                          ),
-                        ],
-                      ),
-
-                      CustomNextButton(
-                        onPressed: () {
-                          // handle action
+                      const SizedBox(height: 10),
+                      CustomDropdown(
+                        value: selectedOver,
+                        items: overs,
+                        onChanged: (value) {
+                          setState(() {
+                            selectedOver = value;
+                          });
                         },
+                      ),
+
+                      SizedBox(height: screenHeight * 0.03),
+
+                      const LabelWithEdit(label: 'Select Team 1'),
+                      const SizedBox(height: 8),
+                      CustomDropdown(
+                        value: selectedTeam1,
+                        hint: 'Select Team 1',
+                        items: teams,
+                        onChanged: (value) {
+                          setState(() {
+                            selectedTeam1 = value;
+                          });
+                        },
+                      ),
+
+                      SizedBox(height: screenHeight * 0.03),
+
+                      const LabelWithEdit(label: 'Select Team 2'),
+                      const SizedBox(height: 8),
+                      CustomDropdown(
+                        value: selectedTeam2,
+                        hint: 'Select Team 2',
+                        items: teams,
+                        onChanged: (value) {
+                          setState(() {
+                            selectedTeam2 = value;
+                          });
+                        },
+                      ),
+
+                      SizedBox(height: screenHeight * 0.05),
+
+                      SizedBox(
+                        width: double.infinity,
+                        child: CustomNextButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/toss_details');
+                          },
+                        ),
                       ),
                     ],
                   ),

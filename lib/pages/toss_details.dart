@@ -13,118 +13,111 @@ class TossDetails extends StatefulWidget {
 }
 
 class _TossDetailsState extends State<TossDetails> {
-  String? selectedTossWinner = 'Team A';  // ✅ must match teams list
-  String? selectedChooseTo = 'Bat';       // ✅ must match choose_to list
+  String? selectedTossWinner = 'Team A';
+  String? selectedChooseTo = 'Bat';
 
   final List<String> teams = ['Team A', 'Team B'];
-  final List<String> choose_to = ['Bat', 'Bowl'];
+  final List<String> chooseTo = ['Bat', 'Bowl'];
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       appBar: const CustomBackActionsAppBar(),
       body: Stack(
         children: [
-          // ✅ Full-screen background image
           Positioned.fill(
             child: Image.asset(
               'lib/assets/background.png',
               fit: BoxFit.cover,
             ),
           ),
-
-          // ✅ Page content
           SafeArea(
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                return SingleChildScrollView(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minHeight: constraints.maxHeight,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-
-                          // ✅ Page title
-                          const Center(
-                            child: Text(
-                              'TOSS DETAILS',
-                              style: TextStyle(
-                                fontSize: 30,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-
-                          // ✅ Toss Winner dropdown
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Toss Winner',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              CustomDropdown(
-                                value: selectedTossWinner,
-                                items: teams,
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedTossWinner = value;
-                                  });
-                                },
-                              ),
-                            ],
-                          ),
-
-                          // ✅ Choose To dropdown
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const LabelWithEdit(label: 'Choose To'),
-                              const SizedBox(height: 8),
-                              CustomDropdown(
-                                value: selectedChooseTo,
-                                hint: 'Select',
-                                items: choose_to,
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedChooseTo = value;
-                                  });
-                                },
-                              ),
-                            ],
-                          ),
-
-                          // ✅ Next button
-                          CustomNextButton(
-                            onPressed: () {
-                              // Do something next
-                              debugPrint('Next pressed with: Winner=$selectedTossWinner, Choose=$selectedChooseTo');
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
+            child: SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: screenHeight -
+                      kToolbarHeight -
+                      MediaQuery.of(context).padding.top -
+                      MediaQuery.of(context).padding.bottom -
+                      kBottomNavigationBarHeight,
+                ),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: screenHeight * 0.03,
                   ),
-                );
-              },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Center(
+                        child: Text(
+                          'TOSS DETAILS',
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+
+                      SizedBox(height: screenHeight * 0.04),
+
+                      const Text(
+                        'Toss Winner',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      CustomDropdown(
+                        value: selectedTossWinner,
+                        items: teams,
+                        onChanged: (value) {
+                          setState(() {
+                            selectedTossWinner = value;
+                          });
+                        },
+                      ),
+
+                      SizedBox(height: screenHeight * 0.03),
+
+                      const LabelWithEdit(label: 'Choose To'),
+                      const SizedBox(height: 8),
+                      CustomDropdown(
+                        value: selectedChooseTo,
+                        hint: 'Select',
+                        items: chooseTo,
+                        onChanged: (value) {
+                          setState(() {
+                            selectedChooseTo = value;
+                          });
+                        },
+                      ),
+
+                      SizedBox(height: screenHeight * 0.05),
+
+                      SizedBox(
+                        width: double.infinity,
+                        child: CustomNextButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/team_setup_page');
+                          },
+                          label: 'Next',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ),
         ],
       ),
       bottomNavigationBar: CustomBottomNavBar(
         selectedIndex: 0,
-        onItemTapped: (int index) {
-          // Handle bottom nav tap
-        },
+        onItemTapped: (int index) {},
       ),
     );
   }

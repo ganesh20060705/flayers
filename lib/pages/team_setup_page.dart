@@ -5,6 +5,8 @@ import 'package:flayer/components/customnext_button.dart';
 import 'package:flayer/components/custom_dropdown_box.dart';
 
 class TeamSetupScreen extends StatefulWidget {
+  const TeamSetupScreen({super.key});
+
   @override
   _TeamSetupScreenState createState() => _TeamSetupScreenState();
 }
@@ -12,20 +14,22 @@ class TeamSetupScreen extends StatefulWidget {
 class _TeamSetupScreenState extends State<TeamSetupScreen> {
   List<Player> players = [
     Player(1, 'Captain', 'Wicketkeeper', Colors.orange),
-    Player(2, 'Player 2', 'Batsman', Color(0xFF2196F3)),
-    Player(3, 'Player 3', 'Bowler', Color(0xFF2196F3)),
-    Player(4, 'Player 4', 'All-rounder', Color(0xFF2196F3)),
-    Player(5, 'Player 4', 'All-rounder', Color(0xFF2196F3)),
-    Player(6, 'Player 4', 'All-rounder', Color(0xFF2196F3)),
-    Player(7, 'Player 4', 'All-rounder', Color(0xFF2196F3)),
-    Player(8, 'Player 4', 'All-rounder', Color(0xFF2196F3)),
-    Player(9, 'Player 4', 'All-rounder', Color(0xFF2196F3)),
-    Player(10, 'Player 4', 'All-rounder', Color(0xFF2196F3)),
-    Player(11, 'Player 4', 'All-rounder', Color(0xFF2196F3)),
+    Player(2, 'Player 2', 'Batsman', const Color(0xFF2196F3)),
+    Player(3, 'Player 3', 'Bowler', const Color(0xFF2196F3)),
+    Player(4, 'Player 4', 'All-rounder', const Color(0xFF2196F3)),
+    Player(5, 'Player 5', 'All-rounder', const Color(0xFF2196F3)),
+    Player(6, 'Player 6', 'All-rounder', const Color(0xFF2196F3)),
+    Player(7, 'Player 7', 'All-rounder', const Color(0xFF2196F3)),
+    Player(8, 'Player 8', 'All-rounder', const Color(0xFF2196F3)),
+    Player(9, 'Player 9', 'All-rounder', const Color(0xFF2196F3)),
+    Player(10, 'Player 10', 'All-rounder', const Color(0xFF2196F3)),
+    Player(11, 'Player 11', 'All-rounder', const Color(0xFF2196F3)),
   ];
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: const CustomBackActionsAppBar(),
@@ -39,9 +43,9 @@ class _TeamSetupScreenState extends State<TeamSetupScreen> {
 
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(
+              padding: EdgeInsets.symmetric(
                 horizontal: 12.0,
-                vertical: 16.0,
+                vertical: screenHeight * 0.02,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,7 +111,7 @@ class _TeamSetupScreenState extends State<TeamSetupScreen> {
                     ],
                   ),
 
-                  const SizedBox(height: 20),
+                  SizedBox(height: screenHeight * 0.02),
 
                   Expanded(
                     child: ListView.builder(
@@ -115,7 +119,7 @@ class _TeamSetupScreenState extends State<TeamSetupScreen> {
                       itemBuilder: (context, index) {
                         final player = players[index];
                         return Padding(
-                          padding: const EdgeInsets.only(bottom: 12.0),
+                          padding: EdgeInsets.only(bottom: screenHeight * 0.015),
                           child: Row(
                             children: [
                               Container(
@@ -172,10 +176,6 @@ class _TeamSetupScreenState extends State<TeamSetupScreen> {
                               Container(
                                 width: 150,
                                 height: 40,
-                                decoration: BoxDecoration(
-                                  
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
                                 child: CustomDropdown(
                                   value: player.role,
                                   items: const [
@@ -203,21 +203,20 @@ class _TeamSetupScreenState extends State<TeamSetupScreen> {
           ),
 
           Padding(
-  padding: const EdgeInsets.only(bottom: 30.0),
-  child: Align(
-    alignment: Alignment.center,
-    child: SizedBox(
-      width: 350, // 🎯 Your desired width
-      child: CustomNextButton(
-        onPressed: () {
-          // handle save action
-        },
-        label: 'Save and Continue',
-      ),
-    ),
-  ),
-),
-
+            padding: const EdgeInsets.only(bottom: 30.0),
+            child: Align(
+              alignment: Alignment.center,
+              child: SizedBox(
+                width: 350,
+                child: CustomNextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/team_setup_page2');
+                  },
+                  label: 'Save and Continue',
+                ),
+              ),
+            ),
+          ),
         ],
       ),
 

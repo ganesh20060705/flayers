@@ -21,11 +21,13 @@ class _PlayersSelectionState extends State<PlayersSelection> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       appBar: const CustomBackActionsAppBar(),
       body: Stack(
         children: [
-          /// ✅ FIXED: Fullscreen BG image with **Positioned.fill**
+          /// ✅ Fullscreen background
           Positioned.fill(
             child: Image.asset(
               'lib/assets/background.png',
@@ -33,15 +35,16 @@ class _PlayersSelectionState extends State<PlayersSelection> {
             ),
           ),
 
-          /// ✅ Scroll content with **physics** to push to bottom if needed
           SafeArea(
             child: SingleChildScrollView(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                padding: EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: screenHeight * 0.02,
+                ),
                 child: ConstrainedBox(
                   constraints: BoxConstraints(
-                    /// ✅ Always at least screen height
-                    minHeight: MediaQuery.of(context).size.height -
+                    minHeight: screenHeight -
                         kToolbarHeight -
                         MediaQuery.of(context).padding.top -
                         MediaQuery.of(context).padding.bottom -
@@ -51,7 +54,7 @@ class _PlayersSelectionState extends State<PlayersSelection> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 70),
+                        SizedBox(height: screenHeight * 0.05),
                         const Center(
                           child: Text(
                             'Select Players',
@@ -62,7 +65,7 @@ class _PlayersSelectionState extends State<PlayersSelection> {
                           ),
                         ),
 
-                        const SizedBox(height: 30),
+                        SizedBox(height: screenHeight * 0.03),
 
                         const Text(
                           'Batting Team : Team 1',
@@ -72,7 +75,7 @@ class _PlayersSelectionState extends State<PlayersSelection> {
                           ),
                         ),
 
-                        const SizedBox(height: 25),
+                        SizedBox(height: screenHeight * 0.02),
 
                         const Text(
                           'Striker (On Strike)',
@@ -82,7 +85,7 @@ class _PlayersSelectionState extends State<PlayersSelection> {
                           ),
                         ),
 
-                        const SizedBox(height:10),
+                        const SizedBox(height: 10),
 
                         CustomDropdown(
                           value: selectedStriker,
@@ -95,7 +98,7 @@ class _PlayersSelectionState extends State<PlayersSelection> {
                           },
                         ),
 
-                        const SizedBox(height: 25),
+                        SizedBox(height: screenHeight * 0.02),
 
                         const Text(
                           'Non-Striker',
@@ -118,7 +121,7 @@ class _PlayersSelectionState extends State<PlayersSelection> {
                           },
                         ),
 
-                        const SizedBox(height: 25),
+                        SizedBox(height: screenHeight * 0.02),
 
                         const Text(
                           'Bowling Team : Team 2',
@@ -141,7 +144,7 @@ class _PlayersSelectionState extends State<PlayersSelection> {
                           },
                         ),
 
-                        const SizedBox(height: 30), 
+                        SizedBox(height: screenHeight * 0.03),
 
                         SizedBox(
                           width: double.infinity,
@@ -150,7 +153,6 @@ class _PlayersSelectionState extends State<PlayersSelection> {
                               // handle start match action
                             },
                             label: 'Start Match',
-                            
                           ),
                         ),
                       ],

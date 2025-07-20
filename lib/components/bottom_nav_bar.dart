@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
-  final int? selectedIndex; // ✅ make it nullable
+  final int selectedIndex; // ✅ NOT nullable now
   final Function(int) onItemTapped;
 
   const CustomBottomNavBar({
     Key? key,
-    this.selectedIndex,
+    required this.selectedIndex,
     required this.onItemTapped,
   }) : super(key: key);
 

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flayer/components/bottom_nav_bar.dart';
 import 'package:flayer/components/custom_back_actions_app_bar.dart';
 import 'package:flayer/components/custom_dropdown_box.dart';
-import 'package:flayer/components/label_with_edit.dart';
 import 'package:flayer/components/customnext_button.dart';
 
 class TossDetails extends StatefulWidget {
@@ -29,7 +28,7 @@ class _TossDetailsState extends State<TossDetails> {
         children: [
           Positioned.fill(
             child: Image.asset(
-              'lib/assets/background.png',
+              'lib/assets/images/background.png',
               fit: BoxFit.cover,
             ),
           ),
@@ -55,7 +54,8 @@ class _TossDetailsState extends State<TossDetails> {
                         child: Text(
                           'TOSS DETAILS',
                           style: TextStyle(
-                            fontSize: 28,
+                            fontFamily: 'Poppins',
+                            fontSize: 24, // ✅ corrected
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -66,8 +66,9 @@ class _TossDetailsState extends State<TossDetails> {
                       const Text(
                         'Toss Winner',
                         style: TextStyle(
+                          fontFamily: 'Poppins',
                           fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                          fontSize: 16, // ✅ corrected
                         ),
                       ),
                       const SizedBox(height: 10),
@@ -83,7 +84,14 @@ class _TossDetailsState extends State<TossDetails> {
 
                       SizedBox(height: screenHeight * 0.03),
 
-                      const LabelWithEdit(label: 'Choose To'),
+                      const Text(
+                        'Choose To',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16, // ✅ corrected
+                        ),
+                      ),
                       const SizedBox(height: 8),
                       CustomDropdown(
                         value: selectedChooseTo,
@@ -102,7 +110,7 @@ class _TossDetailsState extends State<TossDetails> {
                         width: double.infinity,
                         child: CustomNextButton(
                           onPressed: () {
-                            Navigator.pushNamed(context, '/team_setup_page');
+                            Navigator.pushNamed(context, '/players_selection');
                           },
                           label: 'Next',
                         ),
@@ -116,9 +124,17 @@ class _TossDetailsState extends State<TossDetails> {
         ],
       ),
       bottomNavigationBar: CustomBottomNavBar(
-        selectedIndex: 0,
-        onItemTapped: (int index) {},
-      ),
+  selectedIndex: 0, // this page is Home, so index 0 is selected
+  onItemTapped: (int index) {
+    if (index == 0) {
+      // Already on Home — maybe do nothing, or navigate if you want to reload.
+      Navigator.pushReplacementNamed(context, '/home_page');
+    } else if (index == 1) {
+      Navigator.pushReplacementNamed(context, '/account_page');
+    }
+  },
+),
+
     );
   }
 }

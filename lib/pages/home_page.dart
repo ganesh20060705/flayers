@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flayer/components/bottom_nav_bar.dart';
 import 'package:flayer/components/customnext_button.dart';
+import 'package:flayer/pages/account_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -19,7 +20,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     pages.addAll([
       const HomeContent(),
-      const Center(child: Text("Account Page")),
+      const AccountScreen(),
     ]);
   }
 
@@ -50,11 +51,15 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: 1,
       title: Row(
         children: [
-          Image.asset('lib/assets/app_icon.png', width: 24, height: 24),
+          Image.asset('lib/assets/images/app_icon.png', width: 24, height: 24),
           const SizedBox(width: 8),
           const Text(
             "Flayers",
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+              fontSize: 24,
+            ),
           ),
         ],
       ),
@@ -64,7 +69,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: GestureDetector(
             onTap: () {},
             child: Image.asset(
-              'lib/assets/notification.png',
+              'lib/assets/images/notification.png',
               width: 45,
               height: 45,
             ),
@@ -95,10 +100,11 @@ class HomeContent extends StatelessWidget {
 
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(
-        horizontal: screenWidth * 0.05, // 5% of screen width
-        vertical: screenHeight * 0.02,  // 2% of screen height
+        horizontal: screenWidth * 0.05,
+        vertical: screenHeight * 0.05,
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           buildCard(
             context: context,
@@ -107,7 +113,7 @@ class HomeContent extends StatelessWidget {
                 "Create and score a new cricket match. Share the match code with others so they can follow along.",
             color: const Color(0xFF0096FF),
             buttonText: "Start Match",
-            buttonColor: const Color(0xFFD4FF4F),
+            buttonColor: const Color(0xFFE1FF49),
             textColor: Colors.white,
             buttonTextColor: Colors.black,
           ),
@@ -132,7 +138,7 @@ class HomeContent extends StatelessWidget {
                 "All Match History and recently played match list in one place.",
             color: const Color(0xFF23CE6B),
             buttonText: "View History",
-            buttonColor: Colors.black,
+            buttonColor: const Color(0xFF272D2D),
             textColor: Colors.white,
             buttonTextColor: Colors.white,
           ),
@@ -166,7 +172,7 @@ class HomeContent extends StatelessWidget {
             title,
             style: TextStyle(
               color: textColor,
-              fontSize: 20,
+              fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.center,
@@ -174,7 +180,10 @@ class HomeContent extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             description,
-            style: TextStyle(color: textColor, fontSize: 14),
+            style: TextStyle(
+              color: textColor,
+              fontSize: 12,
+            ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
@@ -193,23 +202,28 @@ class HomeContent extends StatelessWidget {
                   hintStyle: TextStyle(
                     color: Color.fromRGBO(0, 0, 0, 0.6),
                     fontWeight: FontWeight.w800,
+                    fontSize: 16,
                   ),
                   border: InputBorder.none,
                 ),
               ),
             ),
           const SizedBox(height: 8),
-
-          // ✅ Use your custom button
           CustomNextButton(
             onPressed: () {
               if (buttonText == "Start Match") {
                 Navigator.pushNamed(context, '/new_match_details');
               } else {
-                // Other actions as needed
+                // Add your other actions here
               }
             },
             label: buttonText,
+            color: buttonColor,
+            textStyle: TextStyle(
+              fontSize: 14,
+              color: buttonTextColor ?? Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ],
       ),

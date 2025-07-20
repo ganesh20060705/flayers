@@ -27,10 +27,9 @@ class _PlayersSelectionState extends State<PlayersSelection> {
       appBar: const CustomBackActionsAppBar(),
       body: Stack(
         children: [
-          /// ✅ Fullscreen background
           Positioned.fill(
             child: Image.asset(
-              'lib/assets/background.png',
+              'lib/assets/images/background.png',
               fit: BoxFit.cover,
             ),
           ),
@@ -59,7 +58,8 @@ class _PlayersSelectionState extends State<PlayersSelection> {
                           child: Text(
                             'Select Players',
                             style: TextStyle(
-                              fontSize: 30,
+                              fontFamily: 'Poppins',
+                              fontSize: 24, // ✅ updated from 30
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -67,12 +67,25 @@ class _PlayersSelectionState extends State<PlayersSelection> {
 
                         SizedBox(height: screenHeight * 0.03),
 
-                        const Text(
-                          'Batting Team : Team 1',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                          ),
+                        Row(
+                          children: const [
+                            Text(
+                              'Batting Team : ',
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18, // ✅ updated
+                              ),
+                            ),
+                            Text(
+                              'Team 1',
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.w400, // ✅ regular
+                                fontSize: 18,
+                              ),
+                            ),
+                          ],
                         ),
 
                         SizedBox(height: screenHeight * 0.02),
@@ -80,8 +93,9 @@ class _PlayersSelectionState extends State<PlayersSelection> {
                         const Text(
                           'Striker (On Strike)',
                           style: TextStyle(
+                            fontFamily: 'Poppins',
                             fontWeight: FontWeight.bold,
-                            fontSize: 17,
+                            fontSize: 16, // ✅ updated
                           ),
                         ),
 
@@ -103,8 +117,9 @@ class _PlayersSelectionState extends State<PlayersSelection> {
                         const Text(
                           'Non-Striker',
                           style: TextStyle(
+                            fontFamily: 'Poppins',
                             fontWeight: FontWeight.bold,
-                            fontSize: 17,
+                            fontSize: 16, // ✅ updated
                           ),
                         ),
 
@@ -123,12 +138,25 @@ class _PlayersSelectionState extends State<PlayersSelection> {
 
                         SizedBox(height: screenHeight * 0.02),
 
-                        const Text(
-                          'Bowling Team : Team 2',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                          ),
+                        Row(
+                          children: const [
+                            Text(
+                              'Bowling Team : ',
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18, // ✅ updated
+                              ),
+                            ),
+                            Text(
+                              'Team 2',
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.w400, // ✅ regular
+                                fontSize: 18,
+                              ),
+                            ),
+                          ],
                         ),
 
                         const SizedBox(height: 10),
@@ -165,9 +193,17 @@ class _PlayersSelectionState extends State<PlayersSelection> {
         ],
       ),
       bottomNavigationBar: CustomBottomNavBar(
-        selectedIndex: 0,
-        onItemTapped: (int index) {},
-      ),
+  selectedIndex: 0, // this page is Home, so index 0 is selected
+  onItemTapped: (int index) {
+    if (index == 0) {
+      // Already on Home — maybe do nothing, or navigate if you want to reload.
+      Navigator.pushReplacementNamed(context, '/home_page');
+    } else if (index == 1) {
+      Navigator.pushReplacementNamed(context, '/account_page');
+    }
+  },
+),
+
     );
   }
 }

@@ -28,8 +28,6 @@ class _TeamSetupPage2State extends State<TeamSetupPage2> {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: const CustomBackActionsAppBar(),
@@ -40,20 +38,15 @@ class _TeamSetupPage2State extends State<TeamSetupPage2> {
             color: Colors.grey[300],
             margin: const EdgeInsets.symmetric(horizontal: 16),
           ),
-
           Expanded(
             child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: 12.0,
-                vertical: screenHeight * 0.02,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Top row: Team label + Add/Remove buttons
+                  // Team label + add/remove
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       const Text(
                         'Team 2',
@@ -68,18 +61,24 @@ class _TeamSetupPage2State extends State<TeamSetupPage2> {
                           GestureDetector(
                             onTap: _addPlayer,
                             child: Container(
-                              padding: const EdgeInsets.all(8),
+                              width: 110,
+                              height: 38,
                               decoration: BoxDecoration(
                                 border: Border.all(color: Colors.black),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: const [
-                                  Icon(Icons.add, size: 16, color: Colors.black),
+                                  Icon(Icons.add, size: 18, color: Colors.black),
                                   SizedBox(width: 4),
                                   Text(
                                     'Add Players',
-                                    style: TextStyle(fontSize: 14, color: Colors.black),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -89,18 +88,24 @@ class _TeamSetupPage2State extends State<TeamSetupPage2> {
                           GestureDetector(
                             onTap: _removePlayer,
                             child: Container(
-                              padding: const EdgeInsets.all(8),
+                              width: 138,
+                              height: 38,
                               decoration: BoxDecoration(
                                 border: Border.all(color: Colors.black),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: const [
-                                  Icon(Icons.remove, size: 16, color: Colors.black),
+                                  Icon(Icons.remove, size: 18, color: Colors.black),
                                   SizedBox(width: 4),
                                   Text(
                                     'Remove Players',
-                                    style: TextStyle(fontSize: 14, color: Colors.black),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -110,118 +115,119 @@ class _TeamSetupPage2State extends State<TeamSetupPage2> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 16),
 
-                  SizedBox(height: screenHeight * 0.02),
-
-                  // Players List
+                  // Players list
                   Expanded(
-                    child: ListView.builder(
-                      itemCount: players.length,
-                      itemBuilder: (context, index) {
-                        final player = players[index];
-                        return Padding(
-                          padding: EdgeInsets.only(bottom: screenHeight * 0.015),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  color: player.color,
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    '${player.number}',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: Column(
+                        children: players.map((player) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 10),
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 38,
+                                    height: 38,
+                                    decoration: BoxDecoration(
+                                      color: player.color,
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: const Center(
+                                      child: Text(
+                                        '1',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ),
-
-                              const SizedBox(width: 12),
-
-                              Expanded(
-                                child: Container(
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.black),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  alignment: Alignment.centerLeft,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                                    child: TextField(
-                                      controller: TextEditingController(text: player.name),
-                                      style: const TextStyle(fontSize: 14),
-                                      decoration: const InputDecoration(
-                                        border: InputBorder.none,
-                                        isCollapsed: true,
+                                  const SizedBox(width: 12),
+                                  Container(
+                                    width: 214,
+                                    height: 38,
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.black),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    alignment: Alignment.centerLeft,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                                      child: TextField(
+                                        controller: TextEditingController(text: player.name),
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.normal,
+                                        ),
+                                        decoration: const InputDecoration(
+                                          border: InputBorder.none,
+                                          isCollapsed: true,
+                                        ),
+                                        onChanged: (value) {
+                                          player.name = value;
+                                        },
                                       ),
-                                      textAlignVertical: TextAlignVertical.center,
-                                      onChanged: (value) {
-                                        player.name = value;
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  SizedBox(
+                                    width: 180, // Increased width
+                                    height: 38,
+                                    child: CustomDropdown(
+                                      value: player.role,
+                                      items: const [
+                                        'Wicketkeeper',
+                                        'Batsman',
+                                        'Bowler',
+                                        'All-rounder',
+                                      ],
+                                      onChanged: (String? newValue) {
+                                        setState(() {
+                                          player.role = newValue!;
+                                        });
                                       },
                                     ),
                                   ),
-                                ),
+                                ],
                               ),
-
-                              const SizedBox(width: 12),
-
-                              Container(
-                                width: 160,
-                                height: 40,
-                                child: CustomDropdown(
-                                  value: player.role,
-                                  items: const [
-                                    'Wicketkeeper',
-                                    'Batsman',
-                                    'Bowler',
-                                    'All-rounder',
-                                  ],
-                                  onChanged: (String? newValue) {
-                                    setState(() {
-                                      player.role = newValue!;
-                                    });
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
+                            ),
+                          );
+                        }).toList(),
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
           ),
-
-          Padding(
-            padding: const EdgeInsets.only(bottom: 30.0),
-            child: Align(
-              alignment: Alignment.center,
-              child: SizedBox(
-                width: 350,
-                child: CustomNextButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/players_selection');
-                  },
-                  label: 'Save and Continue',
-                ),
-              ),
-            ),
-          ),
         ],
       ),
 
-      bottomNavigationBar: CustomBottomNavBar(
-        selectedIndex: 0,
-        onItemTapped: (int index) {},
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 20.0, top: 10),
+            child: SizedBox(
+              width: 350,
+              child: CustomNextButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/new_match_details');
+                },
+                label: 'Save and Continue',
+              ),
+            ),
+          ),
+          CustomBottomNavBar(
+            selectedIndex: 0,
+            onItemTapped: (int index) {},
+          ),
+        ],
       ),
     );
   }

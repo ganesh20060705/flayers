@@ -1,3 +1,4 @@
+import 'package:flayer/pages/account_page.dart';
 import 'package:flayer/pages/home_page.dart';
 import 'package:flayer/pages/new_match_details.dart';
 import 'package:flayer/pages/players_selection.dart';
@@ -17,9 +18,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'flayers',
       debugShowCheckedModeBanner: false,
-      
+      theme: ThemeData(
+        useMaterial3: true,
+        fontFamily: 'Poppins', 
+      ),
       home:HomePage(),
       initialRoute: '/home_page',
 
@@ -30,7 +34,8 @@ class MyApp extends StatelessWidget {
         '/players_selection': (context) => const PlayersSelection(),
         '/team_setup_page': (context) => TeamSetupScreen(),
         '/team_setup_page2': (context) => TeamSetupPage2(),
-        '/toss_details':(context) => TossDetails()
+        '/toss_details':(context) => TossDetails(),
+        '/acc_page':(context) => AccountScreen()
       },
     );
   }

@@ -3,21 +3,25 @@ import 'package:flutter/material.dart';
 class CustomNextButton extends StatelessWidget {
   final VoidCallback onPressed;
   final String label;
+  final TextStyle? textStyle;
+  final Color? color;
 
   const CustomNextButton({
     super.key,
     required this.onPressed,
     this.label = 'Next',
+    this.textStyle,
+    this.color,
   });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: double.infinity,
-      height: 50,
+      width: double.infinity, // ✅ fills parent (394 if parent is 394)
+      height: 58, // ✅ matches Figma spec
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFC9FF26), // updated color ✅
+          backgroundColor: color ?? const Color(0xFFC9FF26),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30),
           ),
@@ -25,10 +29,13 @@ class CustomNextButton extends StatelessWidget {
         onPressed: onPressed,
         child: Text(
           label,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
+          style: textStyle ??
+              const TextStyle(
+                fontFamily: 'Poppins', // ✅ Ensure Poppins is enforced
+                fontSize: 20.67,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
         ),
       ),
     );

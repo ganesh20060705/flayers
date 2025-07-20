@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class LabelWithEdit extends StatelessWidget {
   final String label;
   final VoidCallback? onEdit;
+  final TextStyle? labelStyle; // ✅ new
 
   const LabelWithEdit({
     super.key,
     required this.label,
     this.onEdit,
+    this.labelStyle, // ✅ new
   });
 
   @override
@@ -17,7 +19,11 @@ class LabelWithEdit extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: labelStyle ??
+              const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
         ),
         GestureDetector(
           onTap: onEdit ?? () {},
@@ -25,7 +31,13 @@ class LabelWithEdit extends StatelessWidget {
             children: [
               Icon(Icons.edit, size: 16),
               SizedBox(width: 4),
-              Text('Edit'),
+              Text(
+                'Edit',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.normal,
+                ),
+              ),
             ],
           ),
         ),

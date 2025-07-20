@@ -3,6 +3,7 @@ import 'package:flayer/components/custom_back_actions_app_bar.dart';
 import 'package:flayer/components/bottom_nav_bar.dart';
 import 'package:flayer/components/customnext_button.dart';
 import 'package:flayer/components/custom_dropdown_box.dart';
+import 'package:flayer/pages/account_page.dart';
 
 class TeamSetupScreen extends StatefulWidget {
   const TeamSetupScreen({super.key});
@@ -12,6 +13,8 @@ class TeamSetupScreen extends StatefulWidget {
 }
 
 class _TeamSetupScreenState extends State<TeamSetupScreen> {
+  int currentIndex = 0;
+
   List<Player> players = [
     Player(1, 'Captain', 'Wicketkeeper', Colors.orange),
     Player(2, 'Player 2', 'Batsman', const Color(0xFF2196F3)),
@@ -26,218 +29,229 @@ class _TeamSetupScreenState extends State<TeamSetupScreen> {
     Player(11, 'Player 11', 'All-rounder', const Color(0xFF2196F3)),
   ];
 
+  late final List<Widget> pages;
+
+  @override
+  void initState() {
+    super.initState();
+    pages = [
+      buildTeamSetupContent(),
+      const AccountScreen(),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: const CustomBackActionsAppBar(),
-
-      body: Column(
-        children: [
-          Container(
-            height: 1,
-            color: Colors.grey[300],
-            margin: const EdgeInsets.symmetric(horizontal: 16),
-          ),
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: 12.0,
-                vertical: screenHeight * 0.02,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Top row
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Team 1',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          GestureDetector(
-                            onTap: _addPlayer,
-                            child: Container(
-                              width: 110,
-                              height: 38,
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
-                                  Icon(Icons.add, size: 18, color: Colors.black),
-                                  SizedBox(width: 4),
-                                  Text(
-                                    'Add Players',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          GestureDetector(
-                            onTap: _removePlayer,
-                            child: Container(
-                              width: 138,
-                              height: 38,
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
-                                  Icon(Icons.remove, size: 18, color: Colors.black),
-                                  SizedBox(width: 4),
-                                  Text(
-                                    'Remove Players',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: screenHeight * 0.02),
-
-                  Expanded(
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.vertical,
-                      child: Column(
-                        children: players.map((player) {
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 10),
-                            child: SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                children: [
-                                  // Number box
-                                  Container(
-                                    width: 38,
-                                    height: 38,
-                                    decoration: BoxDecoration(
-                                      color: player.color,
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        '${player.number}',
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-
-                                  const SizedBox(width: 12),
-
-                                  // Name box
-                                  Container(
-                                    width: 214,
-                                    height: 38,
-                                    decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.black),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    alignment: Alignment.centerLeft,
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                                      child: TextField(
-                                        controller: TextEditingController(text: player.name),
-                                        style: const TextStyle(fontSize: 14),
-                                        decoration: const InputDecoration(
-                                          border: InputBorder.none,
-                                          isCollapsed: true,
-                                        ),
-                                        onChanged: (value) {
-                                          player.name = value;
-                                        },
-                                      ),
-                                    ),
-                                  ),
-
-                                  const SizedBox(width: 12),
-
-                                  // Wider Dropdown
-                                  SizedBox(
-                                    width: 180, // Increased width for better visibility
-                                    height: 38,
-                                    child: CustomDropdown(
-                                      value: player.role,
-                                      items: const [
-                                        'Wicketkeeper',
-                                        'Batsman',
-                                        'Bowler',
-                                        'All-rounder',
-                                      ],
-                                      onChanged: (String? newValue) {
-                                        setState(() {
-                                          player.role = newValue!;
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-
+      body: pages[currentIndex],
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(bottom: 20.0, top: 10),
-            child: SizedBox(
-              width: 350,
-              child: CustomNextButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/new_match_details');
-                },
-                label: 'Save and Continue',
+          if (currentIndex == 0)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20.0, top: 10),
+              child: SizedBox(
+                width: 350,
+                child: CustomNextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/new_match_details');
+                  },
+                  label: 'Save and Continue',
+                ),
               ),
             ),
-          ),
           CustomBottomNavBar(
-            selectedIndex: 0,
-            onItemTapped: (int index) {},
+            selectedIndex: currentIndex,
+            onItemTapped: (int index) {
+              setState(() {
+                currentIndex = index;
+              });
+            },
           ),
         ],
       ),
+    );
+  }
+
+  Widget buildTeamSetupContent() {
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    return Column(
+      children: [
+        Container(
+          height: 1,
+          color: Colors.grey[300],
+          margin: const EdgeInsets.symmetric(horizontal: 16),
+        ),
+        Expanded(
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: 12.0,
+              vertical: screenHeight * 0.02,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Top row
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Team 1',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        GestureDetector(
+                          onTap: _addPlayer,
+                          child: Container(
+                            width: 110,
+                            height: 38,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.black),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Icon(Icons.add, size: 18, color: Colors.black),
+                                SizedBox(width: 4),
+                                Text(
+                                  'Add Players',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        GestureDetector(
+                          onTap: _removePlayer,
+                          child: Container(
+                            width: 138,
+                            height: 38,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.black),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Icon(Icons.remove, size: 18, color: Colors.black),
+                                SizedBox(width: 4),
+                                Text(
+                                  'Remove Players',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                SizedBox(height: screenHeight * 0.02),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: players.map((player) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: [
+                                // Number box
+                                Container(
+                                  width: 38,
+                                  height: 38,
+                                  decoration: BoxDecoration(
+                                    color: player.color,
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      '${player.number}',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                // Name box
+                                Container(
+                                  width: 214,
+                                  height: 38,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.black),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                                    child: TextField(
+                                      controller: TextEditingController(text: player.name),
+                                      style: const TextStyle(fontSize: 14),
+                                      decoration: const InputDecoration(
+                                        border: InputBorder.none,
+                                        isCollapsed: true,
+                                      ),
+                                      onChanged: (value) {
+                                        player.name = value;
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                // Role dropdown
+                                SizedBox(
+                                  width: 180,
+                                  height: 38,
+                                  child: CustomDropdown(
+                                    value: player.role,
+                                    items: const [
+                                      'Wicketkeeper',
+                                      'Batsman',
+                                      'Bowler',
+                                      'All-rounder',
+                                    ],
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        player.role = newValue!;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 

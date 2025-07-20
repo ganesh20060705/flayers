@@ -1,3 +1,5 @@
+import 'package:flayer/pages/account_page.dart';
+import 'package:flayer/pages/home_page.dart';
 import 'package:flutter/material.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
@@ -5,10 +7,10 @@ class CustomBottomNavBar extends StatelessWidget {
   final Function(int) onItemTapped;
 
   const CustomBottomNavBar({
-    Key? key,
+    super.key,
     required this.selectedIndex,
     required this.onItemTapped,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,13 +27,25 @@ class CustomBottomNavBar extends StatelessWidget {
                 icon: Icons.home,
                 label: "Home",
                 isSelected: selectedIndex == 0,
-                onTap: () => onItemTapped(0),
+                onTap: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const HomePage()),
+                );
+              },
+
               ),
               navItem(
                 icon: Icons.account_circle_outlined,
                 label: "Account",
                 isSelected: selectedIndex == 1,
-                onTap: () => onItemTapped(1),
+                onTap: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AccountScreen()),
+                );
+              },
+
               ),
             ],
           ),

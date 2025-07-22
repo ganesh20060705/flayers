@@ -173,8 +173,10 @@ class _PlayersSelectionState extends State<PlayersSelection> {
                     width: double.infinity,
                     child: CustomNextButton(
                       onPressed: () {
-                        // handle start match action
-                      },
+                      Navigator.pushNamed(
+                                context,
+                                '/players_selection',
+                              );                      },
                       label: 'Start Match',
                     ),
                   ),

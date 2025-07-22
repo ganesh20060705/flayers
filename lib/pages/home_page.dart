@@ -18,10 +18,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    pages.addAll([
-      const HomeContent(),
-      const AccountScreen(),
-    ]);
+    pages.addAll([const HomeContent(), const AccountScreen()]);
   }
 
   @override
@@ -180,10 +177,7 @@ class HomeContent extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             description,
-            style: TextStyle(
-              color: textColor,
-              fontSize: 12,
-            ),
+            style: TextStyle(color: textColor, fontSize: 12),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),

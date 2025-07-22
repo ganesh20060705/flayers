@@ -54,6 +54,23 @@ class _AccountScreenState extends State<AccountScreen> {
   String tagline = '';
   String profilePhotoUrl = '';
 
+  @override
+  void initState() {
+    super.initState();
+    _loadProfileData();
+  }
+
+  Future<void> _loadProfileData() async {
+    final doc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    if (doc.exists) {
+      setState(() {
+        teamName = doc.data()?['teamName'] ?? 'Team Name';
+        tagline = doc.data()?['tagline'] ?? '';
+        profilePhotoUrl = doc.data()?['profilePhotoUrl'] ?? '';
+      });
+    }
+  }
+
   Stream<List<Player>> getPlayersStream() {
     return FirebaseFirestore.instance
         .collection('users')
@@ -213,11 +230,16 @@ class _AccountScreenState extends State<AccountScreen> {
         return CustomDialog(
           title: 'Edit Profile',
           confirmText: 'Save',
-          onConfirm: () {
+          onConfirm: () async {
             setState(() {
               teamName = nameController.text.trim();
               tagline = taglineController.text.trim();
             });
+            await FirebaseFirestore.instance.collection('users').doc(userId).set({
+              'teamName': teamName,
+              'tagline': tagline,
+              'profilePhotoUrl': profilePhotoUrl,
+            }, SetOptions(merge: true));
             Navigator.pop(context);
           },
           fields: [
@@ -349,7 +371,7 @@ class _AccountScreenState extends State<AccountScreen> {
               ),
               const SizedBox(height: 20),
 
-              /// Team logo + tagline
+                            /// Team logo + tagline
               Center(
                 child: Column(
                   children: [
@@ -427,15 +449,18 @@ class _AccountScreenState extends State<AccountScreen> {
                   ),
                 ],
               ),
+
               const SizedBox(height: 12),
 
               /// Players list
               StreamBuilder<List<Player>>(
                 stream: getPlayersStream(),
                 builder: (context, snapshot) {
-                  if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+                  if (!snapshot.hasData) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
                   final players = snapshot.data!;
-                                    return ReorderableListView(
+                  return ReorderableListView(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     onReorder: (oldIndex, newIndex) => _onReorder(players, oldIndex, newIndex),

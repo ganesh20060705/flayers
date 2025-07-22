@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class PrimaryButton extends StatelessWidget {
   final String label;
   final VoidCallback onPressed;
+  final Color color; // ✅ Added
 
   const PrimaryButton({
     super.key,
     required this.label,
     required this.onPressed,
+    this.color = const Color(0xFF2196F3), // ✅ Default Blue
   });
 
   @override
@@ -17,7 +19,7 @@ class PrimaryButton extends StatelessWidget {
       height: 62,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF2196F3), // Blue
+          backgroundColor: color, // ✅ Use passed color
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),

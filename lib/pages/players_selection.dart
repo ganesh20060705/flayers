@@ -49,10 +49,7 @@ class _PlayersSelectionState extends State<PlayersSelection> {
     return Stack(
       children: [
         Positioned.fill(
-          child: Image.asset(
-            'assets/images/background.png',
-            fit: BoxFit.cover,
-          ),
+          child: Image.asset('assets/images/background.png', fit: BoxFit.cover),
         ),
         SafeArea(
           child: SingleChildScrollView(
@@ -173,10 +170,8 @@ class _PlayersSelectionState extends State<PlayersSelection> {
                     width: double.infinity,
                     child: CustomNextButton(
                       onPressed: () {
-                      Navigator.pushNamed(
-                                context,
-                                '/players_selection',
-                              );                      },
+                        Navigator.pushNamed(context, '/score_page');
+                      },
                       label: 'Start Match',
                     ),
                   ),

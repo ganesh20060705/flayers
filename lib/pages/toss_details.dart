@@ -100,7 +100,7 @@ class _TossDetailsState extends State<TossDetails> {
                           width: double.infinity,
                           child: CustomNextButton(
                             onPressed: () {
-                              Navigator.pushNamed(context, '/score_page');
+                              Navigator.pushNamed(context, '/players_selection');
                             },
                             label: 'Next',
                           ),

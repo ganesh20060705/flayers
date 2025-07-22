@@ -17,26 +17,28 @@ class NewMatchPage extends StatefulWidget {
 class _NewMatchPageState extends State<NewMatchPage> {
   int currentIndex = 0;
 
-  late final List<Widget> pages;
-
   String? selectedOver = '10 Overs';
   String? selectedTeam1;
   String? selectedTeam2;
 
-  final List<String> overs = ['5 Overs', '10 Overs', '15 Overs', '20 Overs'];
+  final List<String> overs = ['5 Overs', '10 Overs', '15 Overs', '20 Overs', 'Custom'];
   final List<String> teams = ['Team A', 'Team B'];
 
+  final TextEditingController customOverController = TextEditingController();
+
   @override
-  void initState() {
-    super.initState();
-    pages = [buildNewMatchDetailsPage(), const AccountScreen()];
+  void dispose() {
+    customOverController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CustomBackActionsAppBar(),
-      body: pages[currentIndex],
+      body: currentIndex == 0
+          ? buildNewMatchDetailsPage()
+          : const AccountScreen(),
       bottomNavigationBar: CustomBottomNavBar(
         selectedIndex: currentIndex,
         onItemTapped: (index) {
@@ -93,15 +95,35 @@ class _NewMatchPageState extends State<NewMatchPage> {
                         width: double.infinity,
                         height: 54,
                         child: CustomDropdown(
-                          value: selectedOver,
+                          value: overs.contains(selectedOver) ? selectedOver : 'Custom',
                           items: overs,
                           onChanged: (value) {
                             setState(() {
                               selectedOver = value;
+                              if (value != 'Custom') {
+                                customOverController.clear();
+                              }
                             });
                           },
                         ),
                       ),
+
+                      if (selectedOver == 'Custom') ...[
+                        const SizedBox(height: 10),
+                        TextField(
+                          controller: customOverController,
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(
+                            hintText: 'Enter custom overs',
+                            border: OutlineInputBorder(),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              selectedOver = '$value Overs';
+                            });
+                          },
+                        ),
+                      ],
 
                       const SizedBox(height: 20),
 

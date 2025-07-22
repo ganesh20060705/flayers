@@ -22,16 +22,13 @@ class _PlayersSelectionState extends State<PlayersSelection> {
   final List<String> batsmen = ['Player A', 'Player B', 'Player C'];
   final List<String> bowlers = ['Player X', 'Player Y', 'Player Z'];
 
-  late final List<Widget> pages;
-
-  @override
-  void initState() {
-    super.initState();
-    pages = [buildPlayerSelectionContent(), const AccountScreen()];
-  }
-
   @override
   Widget build(BuildContext context) {
+    final List<Widget> pages = [
+      buildPlayerSelectionContent(),
+      const AccountScreen(),
+    ];
+
     return Scaffold(
       appBar: const CustomBackActionsAppBar(),
       body: pages[currentIndex],
@@ -64,135 +61,124 @@ class _PlayersSelectionState extends State<PlayersSelection> {
                 horizontal: 20,
                 vertical: screenHeight * 0.02,
               ),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: screenHeight -
-                      kToolbarHeight -
-                      MediaQuery.of(context).padding.top -
-                      MediaQuery.of(context).padding.bottom -
-                      kBottomNavigationBarHeight,
-                ),
-                child: IntrinsicHeight(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: screenHeight * 0.05),
-                      const Center(
-                        child: Text(
-                          'Select Players',
-                          style: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: screenHeight * 0.05),
+                  const Center(
+                    child: Text(
+                      'Select Players',
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
                       ),
-                      SizedBox(height: screenHeight * 0.03),
-                      Row(
-                        children: const [
-                          Text(
-                            'Batting Team : ',
-                            style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                          ),
-                          Text(
-                            'Team 1',
-                            style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.w400,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: screenHeight * 0.02),
-                      const Text(
-                        'Striker (On Strike)',
+                    ),
+                  ),
+                  SizedBox(height: screenHeight * 0.03),
+                  Row(
+                    children: const [
+                      Text(
+                        'Batting Team : ',
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                          fontSize: 18,
                         ),
                       ),
-                      const SizedBox(height: 10),
-                      CustomDropdown(
-                        value: selectedStriker,
-                        hint: 'Select Batsman',
-                        items: batsmen,
-                        onChanged: (value) {
-                          setState(() {
-                            selectedStriker = value;
-                          });
-                        },
-                      ),
-                      SizedBox(height: screenHeight * 0.02),
-                      const Text(
-                        'Non-Striker',
+                      Text(
+                        'Team 1',
                         style: TextStyle(
                           fontFamily: 'Poppins',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      CustomDropdown(
-                        value: selectedNonStriker,
-                        hint: 'Select Batsman',
-                        items: batsmen,
-                        onChanged: (value) {
-                          setState(() {
-                            selectedNonStriker = value;
-                          });
-                        },
-                      ),
-                      SizedBox(height: screenHeight * 0.02),
-                      Row(
-                        children: const [
-                          Text(
-                            'Bowling Team : ',
-                            style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                          ),
-                          Text(
-                            'Team 2',
-                            style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.w400,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      CustomDropdown(
-                        value: selectedBowler,
-                        hint: 'Select Bowler',
-                        items: bowlers,
-                        onChanged: (value) {
-                          setState(() {
-                            selectedBowler = value;
-                          });
-                        },
-                      ),
-                      SizedBox(height: screenHeight * 0.03),
-                      SizedBox(
-                        width: double.infinity,
-                        child: CustomNextButton(
-                          onPressed: () {
-                            // handle start match action
-                          },
-                          label: 'Start Match',
+                          fontWeight: FontWeight.w400,
+                          fontSize: 18,
                         ),
                       ),
                     ],
                   ),
-                ),
+                  SizedBox(height: screenHeight * 0.02),
+                  const Text(
+                    'Striker (On Strike)',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  CustomDropdown(
+                    value: selectedStriker,
+                    hint: 'Select Batsman',
+                    items: batsmen,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedStriker = value;
+                      });
+                    },
+                  ),
+                  SizedBox(height: screenHeight * 0.02),
+                  const Text(
+                    'Non-Striker',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  CustomDropdown(
+                    value: selectedNonStriker,
+                    hint: 'Select Batsman',
+                    items: batsmen,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedNonStriker = value;
+                      });
+                    },
+                  ),
+                  SizedBox(height: screenHeight * 0.02),
+                  Row(
+                    children: const [
+                      Text(
+                        'Bowling Team : ',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                      Text(
+                        'Team 2',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w400,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  CustomDropdown(
+                    value: selectedBowler,
+                    hint: 'Select Bowler',
+                    items: bowlers,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedBowler = value;
+                      });
+                    },
+                  ),
+                  SizedBox(height: screenHeight * 0.03),
+                  SizedBox(
+                    width: double.infinity,
+                    child: CustomNextButton(
+                      onPressed: () {
+                        // handle start match action
+                      },
+                      label: 'Start Match',
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

@@ -40,77 +40,74 @@ class _TossDetailsState extends State<TossDetails> {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: ConstrainedBox(
                     constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                    child: IntrinsicHeight(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(height: screenHeight * 0.03),
-                          const Center(
-                            child: Text(
-                              'TOSS DETAILS',
-                              style: TextStyle(
-                                fontFamily: 'Poppins',
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: screenHeight * 0.04),
-                          const Text(
-                            'Toss Winner',
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: screenHeight * 0.03),
+                        const Center(
+                          child: Text(
+                            'TOSS DETAILS',
                             style: TextStyle(
                               fontFamily: 'Poppins',
+                              fontSize: 24,
                               fontWeight: FontWeight.bold,
-                              fontSize: 16,
                             ),
                           ),
-                          const SizedBox(height: 10),
-                          CustomDropdown(
-                            value: selectedTossWinner,
-                            items: teams,
-                            onChanged: (value) {
-                              setState(() {
-                                selectedTossWinner = value;
-                              });
+                        ),
+                        SizedBox(height: screenHeight * 0.04),
+                        const Text(
+                          'Toss Winner',
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        CustomDropdown(
+                          value: selectedTossWinner,
+                          items: teams,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedTossWinner = value;
+                            });
+                          },
+                        ),
+                        SizedBox(height: screenHeight * 0.03),
+                        const Text(
+                          'Choose To',
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        CustomDropdown(
+                          value: selectedChooseTo,
+                          hint: 'Select',
+                          items: chooseTo,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedChooseTo = value;
+                            });
+                          },
+                        ),
+                        SizedBox(height: screenHeight * 0.05),
+                        SizedBox(
+                          width: double.infinity,
+                          child: CustomNextButton(
+                            onPressed: () {
+                              Navigator.pushNamed(
+                                context,
+                                '/players_selection',
+                              );
                             },
+                            label: 'Next',
                           ),
-                          SizedBox(height: screenHeight * 0.03),
-                          const Text(
-                            'Choose To',
-                            style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          CustomDropdown(
-                            value: selectedChooseTo,
-                            hint: 'Select',
-                            items: chooseTo,
-                            onChanged: (value) {
-                              setState(() {
-                                selectedChooseTo = value;
-                              });
-                            },
-                          ),
-                          const SizedBox(height: 20),
-                          const Spacer(),
-                          SizedBox(
-                            width: double.infinity,
-                            child: CustomNextButton(
-                              onPressed: () {
-                                Navigator.pushNamed(
-                                  context,
-                                  '/players_selection',
-                                );
-                              },
-                              label: 'Next',
-                            ),
-                          ),
-                          SizedBox(height: screenPadding.bottom + 16),
-                        ],
-                      ),
+                        ),
+                        SizedBox(height: screenPadding.bottom + 16),
+                      ],
                     ),
                   ),
                 );

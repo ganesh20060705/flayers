@@ -29,19 +29,13 @@ class _TeamSetupScreenState extends State<TeamSetupScreen> {
     Player(11, 'Player 11', 'All-rounder', const Color(0xFF2196F3)),
   ];
 
-  late final List<Widget> pages;
-
   @override
-  void initState() {
-    super.initState();
-    pages = [
+  Widget build(BuildContext context) {
+    final List<Widget> pages = [
       buildTeamSetupContent(),
       const AccountScreen(),
     ];
-  }
 
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CustomBackActionsAppBar(),
       body: pages[currentIndex],
@@ -74,10 +68,12 @@ class _TeamSetupScreenState extends State<TeamSetupScreen> {
     );
   }
 
-  Widget buildTeamSetupContent() {
-    final screenHeight = MediaQuery.of(context).size.height;
+ Widget buildTeamSetupContent() {
+  final screenHeight = MediaQuery.of(context).size.height;
 
-    return Column(
+  return Container(
+    color: Colors.white, // 👈 background color here
+    child: Column(
       children: [
         Container(
           height: 1,
@@ -252,8 +248,10 @@ class _TeamSetupScreenState extends State<TeamSetupScreen> {
           ),
         ),
       ],
-    );
-  }
+    ),
+  );
+}
+
 
   void _addPlayer() {
     setState(() {

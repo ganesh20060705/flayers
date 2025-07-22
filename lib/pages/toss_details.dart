@@ -39,7 +39,9 @@ class _TossDetailsState extends State<TossDetails> {
                 return SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: ConstrainedBox(
-                    constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -98,10 +100,7 @@ class _TossDetailsState extends State<TossDetails> {
                           width: double.infinity,
                           child: CustomNextButton(
                             onPressed: () {
-                              Navigator.pushNamed(
-                                context,
-                                '/players_selection',
-                              );
+                              Navigator.pushNamed(context, '/score_page');
                             },
                             label: 'Next',
                           ),

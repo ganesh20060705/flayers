@@ -628,7 +628,7 @@ class _ScorePageState extends State<ScorePage> {
                             //   ),
                             // ),
                             Text(
-                              "Over: $overs.$balls / ${totalOvers ?? "-"}",
+                              "Over: ${overs.toInt()}.${balls.toInt()} / ${totalOvers ?? "-"}",
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
@@ -739,7 +739,7 @@ class _ScorePageState extends State<ScorePage> {
                                           ),
                                         ),
                                         Text(
-                                          "${batsmanStats[striker]?['runs'] ?? 0}⁽${batsmanStats[striker]?['balls'] ?? 0}⁾",
+                                          "${batsmanStats[striker]?['runs'] ?? 0}(${batsmanStats[striker]?['balls'] ?? 0})",
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 14,
@@ -809,7 +809,7 @@ class _ScorePageState extends State<ScorePage> {
                                           ),
                                         ),
                                         Text(
-                                          "${batsmanStats[nonStriker]?['runs'] ?? 0}⁽${batsmanStats[nonStriker]?['balls'] ?? 0}⁾",
+                                          "${batsmanStats[nonStriker]?['runs'] ?? 0}(${batsmanStats[nonStriker]?['balls'] ?? 0})",
                                           style: const TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 14,

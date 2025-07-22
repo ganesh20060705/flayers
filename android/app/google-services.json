@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "331902335113",
+    "project_id": "flayers-259da",
+    "storage_bucket": "flayers-259da.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:331902335113:android:266ce445007902229d2e58",
+        "android_client_info": {
+          "package_name": "com.example.flayer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5nk0XHJqdAhI-OD490P81dCkFwJ_qUYw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

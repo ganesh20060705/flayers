@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flayer/pages/account_page.dart';
 import 'package:flayer/pages/home_page.dart';
 import 'package:flayer/pages/new_match_details.dart';
@@ -8,6 +9,8 @@ import 'package:flayer/pages/team_setup_page.dart';
 import 'package:flayer/pages/toss_details.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  Firebase.initializeApp();
   runApp(const MyApp());
 }
 

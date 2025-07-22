@@ -48,7 +48,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: 1,
       title: Row(
         children: [
-          Image.asset('lib/assets/images/app_icon.png', width: 24, height: 24),
+          Image.asset('assets/images/app_icon.png', width: 24, height: 24),
           const SizedBox(width: 8),
           const Text(
             "Flayers",
@@ -66,7 +66,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: GestureDetector(
             onTap: () {},
             child: Image.asset(
-              'lib/assets/images/notification.png',
+              'assets/images/notification.png',
               width: 45,
               height: 45,
             ),

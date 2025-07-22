@@ -21,6 +21,7 @@ class _TossDetailsState extends State<TossDetails> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+    final screenPadding = MediaQuery.of(context).padding;
 
     return Scaffold(
       appBar: const CustomBackActionsAppBar(),
@@ -28,113 +29,103 @@ class _TossDetailsState extends State<TossDetails> {
         children: [
           Positioned.fill(
             child: Image.asset(
-              'lib/assets/images/background.png',
+              'assets/images/background.png',
               fit: BoxFit.cover,
             ),
           ),
           SafeArea(
-            child: SingleChildScrollView(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: screenHeight -
-                      kToolbarHeight -
-                      MediaQuery.of(context).padding.top -
-                      MediaQuery.of(context).padding.bottom -
-                      kBottomNavigationBarHeight,
-                ),
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: screenHeight * 0.03,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Center(
-                        child: Text(
-                          'TOSS DETAILS',
-                          style: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 24, // ✅ corrected
-                            fontWeight: FontWeight.bold,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: screenHeight * 0.03),
+                        const Center(
+                          child: Text(
+                            'TOSS DETAILS',
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                      ),
-
-                      SizedBox(height: screenHeight * 0.04),
-
-                      const Text(
-                        'Toss Winner',
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16, // ✅ corrected
+                        SizedBox(height: screenHeight * 0.04),
+                        const Text(
+                          'Toss Winner',
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      CustomDropdown(
-                        value: selectedTossWinner,
-                        items: teams,
-                        onChanged: (value) {
-                          setState(() {
-                            selectedTossWinner = value;
-                          });
-                        },
-                      ),
-
-                      SizedBox(height: screenHeight * 0.03),
-
-                      const Text(
-                        'Choose To',
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16, // ✅ corrected
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      CustomDropdown(
-                        value: selectedChooseTo,
-                        hint: 'Select',
-                        items: chooseTo,
-                        onChanged: (value) {
-                          setState(() {
-                            selectedChooseTo = value;
-                          });
-                        },
-                      ),
-
-                      SizedBox(height: screenHeight * 0.05),
-
-                      SizedBox(
-                        width: double.infinity,
-                        child: CustomNextButton(
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/players_selection');
+                        const SizedBox(height: 10),
+                        CustomDropdown(
+                          value: selectedTossWinner,
+                          items: teams,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedTossWinner = value;
+                            });
                           },
-                          label: 'Next',
                         ),
-                      ),
-                    ],
+                        SizedBox(height: screenHeight * 0.03),
+                        const Text(
+                          'Choose To',
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        CustomDropdown(
+                          value: selectedChooseTo,
+                          hint: 'Select',
+                          items: chooseTo,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedChooseTo = value;
+                            });
+                          },
+                        ),
+                        SizedBox(height: screenHeight * 0.05),
+                        SizedBox(
+                          width: double.infinity,
+                          child: CustomNextButton(
+                            onPressed: () {
+                              Navigator.pushNamed(
+                                context,
+                                '/players_selection',
+                              );
+                            },
+                            label: 'Next',
+                          ),
+                        ),
+                        SizedBox(height: screenPadding.bottom + 16),
+                      ],
+                    ),
                   ),
-                ),
-              ),
+                );
+              },
             ),
           ),
         ],
       ),
       bottomNavigationBar: CustomBottomNavBar(
-  selectedIndex: 0, // this page is Home, so index 0 is selected
-  onItemTapped: (int index) {
-    if (index == 0) {
-      // Already on Home — maybe do nothing, or navigate if you want to reload.
-      Navigator.pushReplacementNamed(context, '/home_page');
-    } else if (index == 1) {
-      Navigator.pushReplacementNamed(context, '/account_page');
-    }
-  },
-),
-
+        selectedIndex: 0,
+        onItemTapped: (int index) {
+          if (index == 0) {
+            Navigator.pushReplacementNamed(context, '/home_page');
+          } else if (index == 1) {
+            Navigator.pushReplacementNamed(context, '/acc_page');
+          }
+        },
+      ),
     );
   }
 }

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flayer/components/custom_dialog_box.dart'; // ✅ your reusable dialog
-import 'package:flayer/components/custom_dropdown_box.dart'; // ✅ your reusable dropdown
+import 'package:flayer/components/custom_dialog_box.dart';
+import 'package:flayer/components/custom_dropdown_box.dart';
+import 'package:flayer/components/primary_button.dart';
 
 class Player {
   String id;
@@ -46,9 +47,12 @@ class AccountScreen extends StatefulWidget {
 }
 
 class _AccountScreenState extends State<AccountScreen> {
-  final String userId = 'testUser123'; // Replace with FirebaseAuth
+  final String userId = 'testUser123';
   final List<String> roleOptions = ['Batsman', 'Bowler', 'Wicketkeeper', 'All-Rounder'];
+
+  String teamName = 'Team Name';
   String tagline = '';
+  String profilePhotoUrl = '';
 
   Stream<List<Player>> getPlayersStream() {
     return FirebaseFirestore.instance
@@ -77,7 +81,7 @@ class _AccountScreenState extends State<AccountScreen> {
           'number': newNumber,
           'name': name.isEmpty ? 'Player $newNumber' : name,
           'role': role.isEmpty ? 'Batsman' : role,
-          'isCaptain': false,
+          'isCaptain': snapshot.docs.isEmpty,
         });
       },
     );
@@ -116,48 +120,181 @@ class _AccountScreenState extends State<AccountScreen> {
     showDialog(
       context: context,
       builder: (_) {
-        return CustomDialog(
-          title: title,
-          confirmText: confirmText,
-          onConfirm: () {
-            onConfirm(nameController.text.trim(), selectedRole ?? 'Batsman');
-            Navigator.pop(context);
-          },
-          fields: [
-            SizedBox(
-              width: double.infinity,
-              child: TextField(
-                controller: nameController,
-                decoration: const InputDecoration(
-                  hintText: 'Player Name',
-                ),
-                style: const TextStyle(fontSize: 14),
-              ),
-            ),
-            const SizedBox(height: 12),
-            CustomDropdown(
-              value: selectedRole,
-              hint: 'Select Role',
-              items: roleOptions,
-              onChanged: (value) {
-                setState(() {
-                  selectedRole = value;
-                });
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return CustomDialog(
+              title: title,
+              confirmText: confirmText,
+              onConfirm: () {
+                onConfirm(nameController.text.trim(), selectedRole ?? 'Batsman');
+                Navigator.pop(context);
               },
-            ),
-          ],
+              fields: [
+                const Text('Player Name', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 6),
+                Container(
+                  width: double.infinity,
+                  height: 54,
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.black, width: 1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: TextField(
+                    controller: nameController,
+                    decoration: const InputDecoration(
+                      hintText: 'Enter Player Name',
+                      border: InputBorder.none,
+                    ),
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const Text('Player Role', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 6),
+                CustomDropdown(
+                  value: selectedRole,
+                  hint: 'Select Role',
+                  items: roleOptions,
+                  onChanged: (value) {
+                    setState(() {
+                      selectedRole = value;
+                    });
+                  },
+                ),
+              ],
+            );
+          },
         );
       },
     );
   }
 
   Future<void> _removePlayer(String id) async {
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .collection('players')
-        .doc(id)
-        .delete();
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          title: const Text('Delete Player'),
+          content: const Text('Are you sure you want to delete this player?'),
+          actions: [
+            PrimaryButton(
+              label: 'Delete',
+              onPressed: () => Navigator.pop(context, true),
+              color: Colors.red,
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirm == true) {
+      final playersRef =
+          FirebaseFirestore.instance.collection('users').doc(userId).collection('players');
+      await playersRef.doc(id).delete();
+
+      final snapshot = await playersRef.orderBy('number').get();
+      final batch = FirebaseFirestore.instance.batch();
+      for (int i = 0; i < snapshot.docs.length; i++) {
+        batch.update(snapshot.docs[i].reference, {'number': i + 1});
+      }
+      await batch.commit();
+    }
+  }
+
+  Future<void> _editProfileDialog() async {
+    final nameController = TextEditingController(text: teamName);
+    final taglineController = TextEditingController(text: tagline);
+
+    showDialog(
+      context: context,
+      builder: (_) {
+        return CustomDialog(
+          title: 'Edit Profile',
+          confirmText: 'Save',
+          onConfirm: () {
+            setState(() {
+              teamName = nameController.text.trim();
+              tagline = taglineController.text.trim();
+            });
+            Navigator.pop(context);
+          },
+          fields: [
+            Center(
+              child: Stack(
+                alignment: Alignment.bottomRight,
+                children: [
+                  CircleAvatar(
+                    radius: 40,
+                    backgroundColor: Colors.grey[300],
+                    child: const Icon(Icons.person, size: 40, color: Colors.black54),
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: GestureDetector(
+                      onTap: () {
+                        debugPrint('Profile photo picker clicked');
+                      },
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.blue,
+                        ),
+                        padding: const EdgeInsets.all(4),
+                        child: const Icon(Icons.edit, size: 16, color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text('Team Name', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 6),
+            Container(
+              width: double.infinity,
+              height: 54,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.black, width: 1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: TextField(
+                controller: nameController,
+                decoration: const InputDecoration(
+                  hintText: 'Enter Team Name',
+                  border: InputBorder.none,
+                ),
+                style: const TextStyle(fontSize: 14),
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text('Tagline', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 6),
+            Container(
+              width: double.infinity,
+              height: 100,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.black, width: 1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: TextField(
+                controller: taglineController,
+                maxLines: null,
+                decoration: const InputDecoration(
+                  hintText: 'Enter Tagline',
+                  border: InputBorder.none,
+                ),
+                style: const TextStyle(fontSize: 14),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> _onReorder(List<Player> players, int oldIndex, int newIndex) async {
@@ -190,18 +327,15 @@ class _AccountScreenState extends State<AccountScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'Account',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
+                  const Text('Account', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
                   GestureDetector(
-                    onTap: () => _editTaglineDialog(),
+                    onTap: _editProfileDialog,
                     child: Row(
                       children: const [
                         Icon(Icons.edit, size: 20),
                         SizedBox(width: 4),
                         Text(
-                          'Edit Tagline',
+                          'Edit Profile',
                           style: TextStyle(
                             decoration: TextDecoration.underline,
                             fontWeight: FontWeight.bold,
@@ -219,20 +353,13 @@ class _AccountScreenState extends State<AccountScreen> {
               Center(
                 child: Column(
                   children: [
-                    Container(
-                      width: 132,
-                      height: 132,
-                      decoration: const BoxDecoration(
-                        color: Colors.purpleAccent,
-                        shape: BoxShape.circle,
-                      ),
+                    CircleAvatar(
+                      radius: 66,
+                      backgroundColor: Colors.purpleAccent,
                       child: const Icon(Icons.person, size: 60, color: Colors.white),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Team Name',
-                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                    ),
+                    Text(teamName, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 4),
                     Text(
                       tagline.isEmpty ? '"Your Team Tagline Here!"' : '"$tagline"',
@@ -245,6 +372,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   ],
                 ),
               ),
+
               const SizedBox(height: 20),
 
               /// Stats box
@@ -257,6 +385,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     _buildStatBox('Match Played', '0'),
                     _verticalDivider(),
@@ -266,6 +395,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   ],
                 ),
               ),
+
               const SizedBox(height: 20),
 
               /// Players header
@@ -299,12 +429,13 @@ class _AccountScreenState extends State<AccountScreen> {
               ),
               const SizedBox(height: 12),
 
+              /// Players list
               StreamBuilder<List<Player>>(
                 stream: getPlayersStream(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
                   final players = snapshot.data!;
-                  return ReorderableListView(
+                                    return ReorderableListView(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     onReorder: (oldIndex, newIndex) => _onReorder(players, oldIndex, newIndex),
@@ -333,7 +464,10 @@ class _AccountScreenState extends State<AccountScreen> {
                               alignment: Alignment.center,
                               child: Text(
                                 '${player.number}',
-                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -342,8 +476,17 @@ class _AccountScreenState extends State<AccountScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(player.name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-                                  Text(player.role, style: const TextStyle(fontSize: 14)),
+                                  Text(
+                                    player.name,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    player.role,
+                                    style: const TextStyle(fontSize: 14),
+                                  ),
                                 ],
                               ),
                             ),
@@ -358,9 +501,10 @@ class _AccountScreenState extends State<AccountScreen> {
                                     icon: const Icon(Icons.delete, size: 24),
                                     onPressed: () => _removePlayer(player.id),
                                   ),
-                                if (!isCaptain) const Icon(Icons.drag_indicator, size: 24),
+                                if (!isCaptain)
+                                  const Icon(Icons.drag_indicator, size: 24),
                               ],
-                            )
+                            ),
                           ],
                         ),
                       );
@@ -368,6 +512,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   );
                 },
               ),
+
               const SizedBox(height: 30),
             ],
           ),
@@ -381,47 +526,31 @@ class _AccountScreenState extends State<AccountScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(label, style: const TextStyle(fontSize: 12)),
+          Text(
+            value,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+            ),
+          ),
           const SizedBox(height: 4),
-          Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ],
       ),
     );
   }
 
   Widget _verticalDivider() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12.0),
-      child: Container(width: 1, color: Colors.grey.shade300),
-    );
-  }
-
-  void _editTaglineDialog() {
-    final taglineController = TextEditingController(text: tagline);
-    showDialog(
-      context: context,
-      builder: (_) {
-        return CustomDialog(
-          title: 'Edit Tagline',
-          confirmText: 'Save',
-          onConfirm: () {
-            setState(() {
-              tagline = taglineController.text.trim();
-            });
-            Navigator.pop(context);
-          },
-          fields: [
-            SizedBox(
-              width: double.infinity,
-              child: TextField(
-                controller: taglineController,
-                decoration: const InputDecoration(hintText: 'Enter Tagline'),
-                style: const TextStyle(fontSize: 14),
-              ),
-            ),
-          ],
-        );
-      },
+    return Container(
+      width: 1,
+      height: 40,
+      color: Colors.grey.shade300,
     );
   }
 }

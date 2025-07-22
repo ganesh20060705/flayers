@@ -19,6 +19,7 @@ class _HomePageState extends State<HomePage> {
       const HomeContent(),
       const Center(child: Text("Account Page")),
     ]);
+    
   }
 
   @override
@@ -50,7 +51,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: Row(
   children: [
     Image.asset(
-      'lib/assets/app_icon.png',
+      'assets/app_icon.png',
       width: 24,
       height: 24,
     ),
@@ -70,7 +71,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         // Optional: handle tap on notification icon
       },
       child: Image.asset(
-        'lib/assets/notification.png',
+        'assets/notification.png',
         width: 45,
         height: 45,
       ),

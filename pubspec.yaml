@@ -23,10 +23,10 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-     - lib/assets/
+     - assets/
   #   - images/a_dot_ham.jpeg
 
   fonts:
     - family: Poppins
       fonts:
-        - asset: fonts/Poppins-Regular.ttf
+        - asset: assets/fonts/Poppins-Regular.ttf

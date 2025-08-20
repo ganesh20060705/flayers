@@ -22,40 +22,46 @@ class CustomDialog extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(20),
         width: 400,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            /// Top bar
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+        constraints: const BoxConstraints(
+          // ✅ limit max height so scrolling works properly
+          maxHeight: 500,
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min, // ✅ Good
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              /// Top bar
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: const Icon(Icons.close, color: Colors.red, size: 24),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: const Icon(Icons.close, color: Colors.red, size: 24),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
 
-            /// Dynamic fields
-            ...fields,
+              /// Dynamic fields
+              ...fields,
 
-            const SizedBox(height: 30),
+              const SizedBox(height: 30),
 
-            /// Confirm button
-            PrimaryButton(
-              label: confirmText,
-              onPressed: onConfirm,
-            ),
-          ],
+              /// Confirm button
+              PrimaryButton(
+                label: confirmText,
+                onPressed: onConfirm,
+              ),
+            ],
+          ),
         ),
       ),
     );

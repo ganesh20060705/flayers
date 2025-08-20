@@ -8,12 +8,10 @@ import 'package:flayer/pages/team_setup_page2.dart';
 import 'package:flutter/material.dart';
 import 'package:flayer/pages/team_setup_page.dart';
 import 'package:flayer/pages/toss_details.dart';
+import 'package:flayer/pages/invite_friends.dart';
+import 'package:flayer/pages/login_signup.dart';
 
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  Firebase.initializeApp();
-  runApp(const MyApp());
-}
+import 'package:firebase_auth/firebase_auth.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -24,11 +22,20 @@ class MyApp extends StatelessWidget {
       title: 'flayers',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(useMaterial3: true, fontFamily: 'Poppins'),
-      home: HomePage(),
-      initialRoute: '/home_page',
-
+      home: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasData) {
+            return HomePage(); // ✅ user logged in
+          } else {
+            return const AuthPage(); // ✅ user not logged in
+          }
+        },
+      ),
       routes: {
-        '/home_page': (context) => const HomePage(),
+        '/home_page': (context) => HomePage(),
         '/new_match_details': (context) => const NewMatchPage(),
         '/players_selection': (context) => const PlayersSelection(),
         '/team_setup_page': (context) => TeamSetupScreen(),

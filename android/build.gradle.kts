@@ -1,10 +1,8 @@
 plugins {
-  // ...
-
-  // Add the dependency for the Google services Gradle plugin
-  id("com.google.gms.google-services") version "4.4.3" apply false
-
+    // Do NOT put com.google.gms.google-services here
+    // Firebase needs it only inside app/build.gradle.kts
 }
+
 allprojects {
     repositories {
         google()
@@ -19,6 +17,7 @@ subprojects {
     val newSubprojectBuildDir: Directory = newBuildDir.dir(project.name)
     project.layout.buildDirectory.value(newSubprojectBuildDir)
 }
+
 subprojects {
     project.evaluationDependsOn(":app")
 }

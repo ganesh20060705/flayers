@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:math';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -9,7 +11,7 @@ class AuthPage extends StatefulWidget {
 }
 
 class _AuthPageState extends State<AuthPage> {
-  bool showLogin = true; // Toggle between login & signup
+  bool showLogin = true;
   final _auth = FirebaseAuth.instance;
 
   // Controllers
@@ -17,12 +19,6 @@ class _AuthPageState extends State<AuthPage> {
   final emailController = TextEditingController();
   final passController = TextEditingController();
   final confirmPassController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    _redirectIfLoggedIn();
-  }
 
   @override
   void dispose() {
@@ -33,16 +29,11 @@ class _AuthPageState extends State<AuthPage> {
     super.dispose();
   }
 
-  // ✅ Auto redirect if user is already logged in
-  void _redirectIfLoggedIn() {
-    final user = _auth.currentUser;
-    if (user != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          Navigator.pushReplacementNamed(context, "/home_page");
-        }
-      });
-    }
+  // 🔹 Generate random team code
+  String _generateTeamCode() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    final rand = Random();
+    return 'TEAM-${List.generate(6, (index) => chars[rand.nextInt(chars.length)]).join()}';
   }
 
   // 🔹 Loading dialog
@@ -118,6 +109,20 @@ class _AuthPageState extends State<AuthPage> {
         // Update display name
         if (userCred.user != null && name.isNotEmpty) {
           await userCred.user!.updateDisplayName(name);
+
+          // 🔹 Generate team code
+          String teamCode = _generateTeamCode();
+
+          // 🔹 Save only user info with teamCode (not teams collection)
+          await FirebaseFirestore.instance
+              .collection("users")
+              .doc(userCred.user!.uid)
+              .set({
+            "name": name,
+            "email": email,
+            "teamCode": teamCode,
+            "createdAt": FieldValue.serverTimestamp(),
+          });
         }
       }
 
@@ -131,8 +136,7 @@ class _AuthPageState extends State<AuthPage> {
       _showError(_mapFirebaseCodeToMessage(e.code));
     } on FormatException catch (e) {
       _hideLoadingIfOpen();
-     _showError(e.message ?? 'Invalid input.');
-
+      _showError(e.message ?? 'Invalid input.');
     } catch (e) {
       _hideLoadingIfOpen();
       _showError('Something went wrong. ${e.toString()}');
@@ -247,7 +251,8 @@ class _AuthPageState extends State<AuthPage> {
               const SizedBox(height: 16),
               _textField(passController, "Password", obscure: true),
               const SizedBox(height: 16),
-              _textField(confirmPassController, "Confirm Password", obscure: true),
+              _textField(confirmPassController, "Confirm Password",
+                  obscure: true),
               const SizedBox(height: 20),
               _authButton("Sign Up", handleAuth),
             ],

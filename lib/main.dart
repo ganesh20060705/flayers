@@ -1,17 +1,27 @@
-import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart'; 
+import 'firebase_options.dart'; 
 import 'package:flayer/pages/account_page.dart';
 import 'package:flayer/pages/home_page.dart';
 import 'package:flayer/pages/score_page.dart';
 import 'package:flayer/pages/new_match_details.dart';
 import 'package:flayer/pages/players_selection.dart';
 import 'package:flayer/pages/team_setup_page2.dart';
-import 'package:flutter/material.dart';
 import 'package:flayer/pages/team_setup_page.dart';
 import 'package:flayer/pages/toss_details.dart';
-import 'package:flayer/pages/invite_friends.dart';
+import 'package:flayer/pages/invite_friends.dart';  
 import 'package:flayer/pages/login_signup.dart';
 
-import 'package:firebase_auth/firebase_auth.dart';
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // ✅ Proper initialization
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -21,19 +31,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'flayers',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(useMaterial3: true, fontFamily: 'Poppins'),
-      home: StreamBuilder<User?>(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasData) {
-            return HomePage(); // ✅ user logged in
-          } else {
-            return const AuthPage(); // ✅ user not logged in
-          }
-        },
+      theme: ThemeData(
+        useMaterial3: true,
+        fontFamily: 'Poppins',
       ),
+      home: const AuthPage(),
       routes: {
         '/home_page': (context) => HomePage(),
         '/new_match_details': (context) => const NewMatchPage(),

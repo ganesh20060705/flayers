@@ -14,9 +14,12 @@ dependencies:
   
   # Updated Firebase dependencies - all compatible versions
   firebase_core: ^2.24.2
-  cloud_firestore: ^4.13.6
-  firebase_auth: ^4.15.3
+  firebase_auth: ^4.17.8
   firebase_storage: ^11.5.6
+
+  # (optional, if you use Firestore etc., keep them aligned to ^2.x core)
+  cloud_firestore: ^4.15.8
+  
   image_picker: ^1.0.4
   google_fonts: ^6.0.0
 

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:math';
 
 class AuthPage extends StatefulWidget {
@@ -12,7 +10,6 @@ class AuthPage extends StatefulWidget {
 
 class _AuthPageState extends State<AuthPage> {
   bool showLogin = true;
-  final _auth = FirebaseAuth.instance;
 
   // Controllers
   final nameController = TextEditingController();
@@ -51,79 +48,65 @@ class _AuthPageState extends State<AuthPage> {
     }
   }
 
-  // 🔹 Firebase error -> friendly message
+  // 🔹 Error message display
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
-  String _mapFirebaseCodeToMessage(String code) {
-    switch (code) {
-      case 'invalid-email':
-        return 'The email address is not valid.';
-      case 'user-disabled':
-        return 'This user account has been disabled.';
-      case 'user-not-found':
-        return 'No user found for that email.';
-      case 'wrong-password':
-        return 'Incorrect password. Please try again.';
-      case 'email-already-in-use':
-        return 'An account already exists for that email.';
-      case 'weak-password':
-        return 'Password is too weak. Use at least 6 characters.';
-      case 'operation-not-allowed':
-        return 'Email/password accounts are not enabled.';
-      default:
-        return code;
+  String _validateInput(String email, String password, String? confirmPassword, String? name) {
+    if (email.isEmpty || !email.contains('@')) {
+      return 'The email address is not valid.';
     }
+    if (password.isEmpty || password.length < 6) {
+      return 'Password is too weak. Use at least 6 characters.';
+    }
+    if (!showLogin) {
+      if (name == null || name.isEmpty) {
+        return 'Please enter your name.';
+      }
+      if (confirmPassword == null || password != confirmPassword) {
+        return 'Passwords do not match.';
+      }
+    }
+    return '';
   }
 
-  // 🔹 Unified authentication handler
+  // 🔹 Unified authentication handler (mock implementation)
   Future<void> handleAuth() async {
     final email = emailController.text.trim();
     final password = passController.text.trim();
     final confirmPassword = confirmPassController.text.trim();
     final name = nameController.text.trim();
 
+    // Validate input
+    final validationError = _validateInput(
+      email, 
+      password, 
+      showLogin ? null : confirmPassword, 
+      showLogin ? null : name
+    );
+    
+    if (validationError.isNotEmpty) {
+      _showError(validationError);
+      return;
+    }
+
     _showLoading();
 
+    // Simulate network delay
+    await Future.delayed(const Duration(seconds: 1));
+
     try {
-      UserCredential userCred;
-
       if (showLogin) {
-        // LOGIN FLOW
-        userCred = await _auth.signInWithEmailAndPassword(
-          email: email,
-          password: password,
-        );
+        // LOGIN FLOW - Mock authentication
+        // In a real app, you would validate credentials against your database here
       } else {
-        // SIGNUP FLOW
-        if (password != confirmPassword) {
-          throw const FormatException('Passwords do not match');
-        }
-
-        userCred = await _auth.createUserWithEmailAndPassword(
-          email: email,
-          password: password,
-        );
-
-        // Update display name
-        if (userCred.user != null && name.isNotEmpty) {
-          await userCred.user!.updateDisplayName(name);
-
-          // 🔹 Generate team code
-          String teamCode = _generateTeamCode();
-
-          // 🔹 Save only user info with teamCode (not teams collection)
-          await FirebaseFirestore.instance
-              .collection("users")
-              .doc(userCred.user!.uid)
-              .set({
-            "name": name,
-            "email": email,
-            "teamCode": teamCode,
-            "createdAt": FieldValue.serverTimestamp(),
-          });
-        }
+        // SIGNUP FLOW - Mock signup
+        // In a real app, you would save user data to your database here
+        // Generate team code for new users
+        String teamCode = _generateTeamCode();
+        // Store user data locally or in your preferred database
+        debugPrint('New user signup: $name, $email, TeamCode: $teamCode');
       }
 
       // NAVIGATE TO HOME AFTER SUCCESS
@@ -131,12 +114,6 @@ class _AuthPageState extends State<AuthPage> {
       if (mounted) {
         Navigator.pushReplacementNamed(context, "/home_page");
       }
-    } on FirebaseAuthException catch (e) {
-      _hideLoadingIfOpen();
-      _showError(_mapFirebaseCodeToMessage(e.code));
-    } on FormatException catch (e) {
-      _hideLoadingIfOpen();
-      _showError(e.message ?? 'Invalid input.');
     } catch (e) {
       _hideLoadingIfOpen();
       _showError('Something went wrong. ${e.toString()}');

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart'; 
-import 'firebase_options.dart'; 
 import 'package:flayer/pages/account_page.dart';
 import 'package:flayer/pages/home_page.dart';
 import 'package:flayer/pages/score_page.dart';
@@ -9,17 +7,10 @@ import 'package:flayer/pages/players_selection.dart';
 import 'package:flayer/pages/team_setup_page2.dart';
 import 'package:flayer/pages/team_setup_page.dart';
 import 'package:flayer/pages/toss_details.dart';
-import 'package:flayer/pages/invite_friends.dart';  
 import 'package:flayer/pages/login_signup.dart';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // ✅ Proper initialization
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-
   runApp(const MyApp());
 }
 

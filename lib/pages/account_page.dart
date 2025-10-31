@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flayer/components/custom_dialog_box.dart';
 import 'package:flayer/components/custom_dropdown_box.dart';
 import 'package:flayer/components/primary_button.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'dart:io';
+import 'dart:async';
 
 class Player {
   String id;
@@ -59,16 +57,20 @@ class _AccountScreenState extends State<AccountScreen> {
   String profilePhotoUrl = '';
   bool isUploading = false;
   bool isLoading = true;
+  List<Player> _playersList = [];
+  StreamController<List<Player>>? _playersStreamController;
+  int _nextPlayerId = 1;
 
   @override
   void initState() {
     super.initState();
+    // Initialize players stream
+    getPlayersStream();
     _initializeAndLoadData();
   }
 
   Future<void> _initializeAndLoadData() async {
     try {
-      await _checkFirebaseInitialization();
       await _loadProfileData();
     } catch (e) {
       _showErrorSnackBar('Initialization error: ${e.toString()}');
@@ -81,20 +83,11 @@ class _AccountScreenState extends State<AccountScreen> {
     }
   }
 
-  Future<void> _checkFirebaseInitialization() async {
-    if (Firebase.apps.isEmpty) {
-      throw Exception("Firebase not initialized");
-    }
-  }
-
   Future<void> _pickAndUploadProfilePhoto() async {
     if (isUploading) return;
 
     try {
       setState(() => isUploading = true);
-
-      // Check Firebase initialization
-      await _checkFirebaseInitialization();
 
       // Pick image
       final picker = ImagePicker();
@@ -125,19 +118,20 @@ class _AccountScreenState extends State<AccountScreen> {
       // Show upload progress
       _showUploadProgress();
 
-      // Upload to Firebase Storage
-      final downloadUrl = await _uploadToStorage(file);
+      // Simulate upload delay
+      await Future.delayed(const Duration(seconds: 1));
 
-      // Delete old photo if exists
-      await _deleteOldProfilePhoto();
+      // Store file path locally (in a real app, upload to your database/storage)
+      // For now, we'll use the file path directly
+      final localPath = pickedFile.path;
 
-      // Save to Firestore
-      await _saveProfileToFirestore(downloadUrl);
+      // Save profile data locally
+      await _saveProfileLocally(localPath);
 
       // Update UI
       if (mounted) {
         setState(() {
-          profilePhotoUrl = downloadUrl;
+          profilePhotoUrl = localPath;
         });
         _showSuccessSnackBar('Photo updated successfully!');
       }
@@ -152,54 +146,10 @@ class _AccountScreenState extends State<AccountScreen> {
     }
   }
 
-  Future<String> _uploadToStorage(File file) async {
-    final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final fileName = '${userId}_$timestamp.jpg';
-    
-    final storageRef = FirebaseStorage.instance
-        .ref()
-        .child('profile_photos')
-        .child(fileName);
-
-    final metadata = SettableMetadata(
-      contentType: 'image/jpeg',
-      customMetadata: {
-        'userId': userId,
-        'uploadedAt': DateTime.now().toIso8601String(),
-      },
-    );
-
-    final uploadTask = storageRef.putFile(file, metadata);
-    final taskSnapshot = await uploadTask;
-
-    if (taskSnapshot.state != TaskState.success) {
-      throw Exception("Upload failed");
-    }
-
-    return await storageRef.getDownloadURL();
-  }
-
-  Future<void> _deleteOldProfilePhoto() async {
-    if (profilePhotoUrl.isNotEmpty) {
-      try {
-        final oldRef = FirebaseStorage.instance.refFromURL(profilePhotoUrl);
-        await oldRef.delete();
-      } catch (e) {
-        // Continue even if old photo deletion fails
-        debugPrint('Failed to delete old profile photo: $e');
-      }
-    }
-  }
-
-  Future<void> _saveProfileToFirestore(String downloadUrl) async {
-    final userDocRef = FirebaseFirestore.instance.collection('users').doc(userId);
-    
-    await userDocRef.set({
-      'profilePhotoUrl': downloadUrl,
-      'teamName': teamName.isNotEmpty ? teamName : 'Team Name',
-      'tagline': tagline,
-      'lastUpdated': FieldValue.serverTimestamp(),
-    }, SetOptions(merge: true));
+  Future<void> _saveProfileLocally(String photoPath) async {
+    // In a real app, save to your preferred database/storage
+    // For now, we just update the local state
+    debugPrint('Saving profile: $photoPath, teamName: $teamName, tagline: $tagline');
   }
 
   void _showUploadProgress() {
@@ -272,8 +222,8 @@ class _AccountScreenState extends State<AccountScreen> {
       errorMessage = "Network error. Check your internet connection.";
     } else if (errorString.contains("permission")) {
       errorMessage = "Permission denied. Check app permissions.";
-    } else if (errorString.contains("firebase") || errorString.contains("storage")) {
-      errorMessage = "Firebase error. Check configuration.";
+    } else if (errorString.contains("storage")) {
+      errorMessage = "Storage error. Please try again.";
     } else if (errorString.contains("file") || errorString.contains("exists")) {
       errorMessage = "File error. Please try selecting the image again.";
     } else {
@@ -285,17 +235,13 @@ class _AccountScreenState extends State<AccountScreen> {
 
   Future<void> _loadProfileData() async {  
     try {
-      final doc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .get();
-
-      if (doc.exists && mounted) {
-        final data = doc.data()!;
+      // In a real app, load from your preferred database
+      // For now, we'll use default values
+      if (mounted) {
         setState(() {
-          teamName = data['teamName'] ?? 'Team Name';
-          tagline = data['tagline'] ?? '';
-          profilePhotoUrl = data['profilePhotoUrl'] ?? '';
+          teamName = 'Team Name';
+          tagline = '';
+          profilePhotoUrl = '';
         });
       }
     } catch (e) {
@@ -304,15 +250,22 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   Stream<List<Player>> getPlayersStream() {
-    return FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .collection('players')
-        .orderBy('number')
-        .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => Player.fromMap(doc.id, doc.data()))
-            .toList());
+    // Return existing stream if available
+    if (_playersStreamController != null) {
+      return _playersStreamController!.stream;
+    }
+    
+    // Create a stream controller for local state management
+    final controller = StreamController<List<Player>>.broadcast();
+    
+    // Initial players list (empty)
+    _playersList = [];
+    controller.add(_playersList);
+    
+    // Store controller reference for updates
+    _playersStreamController = controller;
+    
+    return controller.stream;
   }
 
   Future<void> _addPlayerDialog() async {
@@ -322,17 +275,20 @@ class _AccountScreenState extends State<AccountScreen> {
       initialName: '',
       initialRole: '',
       onConfirm: (name, role) async {
-        final userDoc = FirebaseFirestore.instance.collection('users').doc(userId);
-        final playersRef = userDoc.collection('players');
-        final snapshot = await playersRef.get();
-        final newNumber = snapshot.docs.length + 1;
-
-        await playersRef.add({
-          'number': newNumber,
-          'name': name.isEmpty ? 'Player $newNumber' : name,
-          'role': role.isEmpty ? 'Batsman' : role,
-          'isCaptain': snapshot.docs.isEmpty,
+        final newNumber = _playersList.length + 1;
+        final newPlayer = Player(
+          id: 'player_${_nextPlayerId++}',
+          number: newNumber,
+          name: name.isEmpty ? 'Player $newNumber' : name,
+          role: role.isEmpty ? 'Batsman' : role,
+          isCaptain: _playersList.isEmpty,
+        );
+        
+        setState(() {
+          _playersList.add(newPlayer);
         });
+        
+        _playersStreamController?.add(_playersList);
       },
     );
   }
@@ -344,15 +300,19 @@ class _AccountScreenState extends State<AccountScreen> {
       initialName: player.name,
       initialRole: player.role,
       onConfirm: (name, role) async {
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(userId)
-            .collection('players')
-            .doc(player.id)
-            .update({
-          'name': name,
-          'role': role,
-        });
+        final index = _playersList.indexWhere((p) => p.id == player.id);
+        if (index != -1) {
+          setState(() {
+            _playersList[index] = Player(
+              id: player.id,
+              number: player.number,
+              name: name,
+              role: role,
+              isCaptain: player.isCaptain,
+            );
+          });
+          _playersStreamController?.add(_playersList);
+        }
       },
     );
   }
@@ -446,21 +406,20 @@ class _AccountScreenState extends State<AccountScreen> {
     );
 
     if (confirm == true) {
-      final playersRef = FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .collection('players');
-      
-      await playersRef.doc(id).delete();
-
-      // Reorder remaining players
-      final snapshot = await playersRef.orderBy('number').get();
-      final batch = FirebaseFirestore.instance.batch();
-      
-      for (int i = 0; i < snapshot.docs.length; i++) {
-        batch.update(snapshot.docs[i].reference, {'number': i + 1});
-      }
-      await batch.commit();
+      setState(() {
+        _playersList.removeWhere((p) => p.id == id);
+        // Reorder remaining players
+        for (int i = 0; i < _playersList.length; i++) {
+          _playersList[i] = Player(
+            id: _playersList[i].id,
+            number: i + 1,
+            name: _playersList[i].name,
+            role: _playersList[i].role,
+            isCaptain: i == 0,
+          );
+        }
+      });
+      _playersStreamController?.add(_playersList);
     }
   }
 
@@ -483,15 +442,8 @@ class _AccountScreenState extends State<AccountScreen> {
               tagline = newTagline;
             });
             
-            await FirebaseFirestore.instance
-                .collection('users')
-                .doc(userId)
-                .set({
-              'teamName': teamName,
-              'tagline': tagline,
-              'profilePhotoUrl': profilePhotoUrl,
-              'lastUpdated': FieldValue.serverTimestamp(),
-            }, SetOptions(merge: true));
+            // In a real app, save to your preferred database
+            debugPrint('Saving profile: teamName=$teamName, tagline=$tagline');
             
             if (context.mounted) {
               Navigator.pop(context);
@@ -585,17 +537,24 @@ class _AccountScreenState extends State<AccountScreen> {
     
     if (newIndex > oldIndex) newIndex -= 1;
 
-    final moved = players.removeAt(oldIndex);
-    players.insert(newIndex, moved);
-
-    final batch = FirebaseFirestore.instance.batch();
-    final userDoc = FirebaseFirestore.instance.collection('users').doc(userId);
-
-    for (int i = 0; i < players.length; i++) {
-      final docRef = userDoc.collection('players').doc(players[i].id);
-      batch.update(docRef, {'number': i + 1});
-    }
-    await batch.commit();
+    setState(() {
+      final moved = players.removeAt(oldIndex);
+      players.insert(newIndex, moved);
+      
+      // Update player numbers
+      for (int i = 0; i < players.length; i++) {
+        players[i] = Player(
+          id: players[i].id,
+          number: i + 1,
+          name: players[i].name,
+          role: players[i].role,
+          isCaptain: i == 0,
+        );
+      }
+      _playersList = List.from(players);
+    });
+    
+    _playersStreamController?.add(_playersList);
   }
 
   Widget _buildProfileAvatar({required double radius, Color? backgroundColor}) {
@@ -611,27 +570,13 @@ class _AccountScreenState extends State<AccountScreen> {
                 color: Colors.white,
               ),
             )
-          : profilePhotoUrl.isNotEmpty
+              : profilePhotoUrl.isNotEmpty
               ? ClipOval(
-                  child: Image.network(
-                    profilePhotoUrl,
+                  child: Image.file(
+                    File(profilePhotoUrl),
                     width: radius * 2,
                     height: radius * 2,
                     fit: BoxFit.cover,
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      
-                      return Center(
-                        child: CircularProgressIndicator(
-                          value: loadingProgress.expectedTotalBytes != null
-                              ? loadingProgress.cumulativeBytesLoaded /
-                                  loadingProgress.expectedTotalBytes!
-                              : null,
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      );
-                    },
                     errorBuilder: (context, error, stackTrace) {
                       return Container(
                         width: radius * 2,
@@ -940,5 +885,11 @@ class _AccountScreenState extends State<AccountScreen> {
       height: 65,
       color: Colors.grey.shade300,
     );
+  }
+
+  @override
+  void dispose() {
+    _playersStreamController?.close();
+    super.dispose();
   }
 }

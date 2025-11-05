@@ -170,7 +170,13 @@ class _PlayersSelectionState extends State<PlayersSelection> {
                     width: double.infinity,
                     child: CustomNextButton(
                       onPressed: () {
-                        Navigator.pushNamed(context, '/score_page');
+                        // Get totalOvers from previous route arguments
+                        final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+                        Navigator.pushNamed(
+                          context,
+                          '/score_page',
+                          arguments: {'totalOvers': args?['totalOvers']},
+                        );
                       },
                       label: 'Start Match',
                     ),

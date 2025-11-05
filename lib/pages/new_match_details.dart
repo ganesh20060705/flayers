@@ -182,7 +182,23 @@ class _NewMatchPageState extends State<NewMatchPage> {
                         height: 58,
                         child: CustomNextButton(
                           onPressed: () {
-                            Navigator.pushNamed(context, '/toss_details');
+                            // Extract overs value
+                            int? oversValue;
+                            if (selectedOver != null && selectedOver != 'Custom') {
+                              // Extract number from "10 Overs" format
+                              final match = RegExp(r'(\d+)').firstMatch(selectedOver!);
+                              if (match != null) {
+                                oversValue = int.tryParse(match.group(1)!);
+                              }
+                            } else if (selectedOver == 'Custom' && customOverController.text.isNotEmpty) {
+                              oversValue = int.tryParse(customOverController.text);
+                            }
+                            
+                            Navigator.pushNamed(
+                              context,
+                              '/toss_details',
+                              arguments: {'totalOvers': oversValue},
+                            );
                           },
                           textStyle: const TextStyle(
                             fontFamily: 'Poppins',

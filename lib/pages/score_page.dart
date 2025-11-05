@@ -1,8 +1,11 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class ScorePage extends StatefulWidget {
-  const ScorePage({super.key});
+  final int? totalOvers;
+  
+  const ScorePage({super.key, this.totalOvers});
 
   @override
   State<ScorePage> createState() => _ScorePageState();
@@ -23,12 +26,23 @@ class _ScorePageState extends State<ScorePage> {
     'Player 10',
     'Player 11',
   ];
+  
+  // Record Wicket modal state
+  String? selectedDismissalMethod;
+  String? selectedFielder;
+  List<String> dismissalMethods = ['Bowled', 'LBW', 'Stumped', 'Caught', 'Run Out', 'Retire'];
+  
   int? totalOvers;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _showOversDialog());
+    // Set totalOvers from widget parameter if provided
+    totalOvers = widget.totalOvers;
+    // Only show dialog if totalOvers wasn't provided
+    if (totalOvers == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _showOversDialog());
+    }
   }
 
   List<String> usedBatsmen = ['Player 1', 'Player 2'];
@@ -213,6 +227,208 @@ class _ScorePageState extends State<ScorePage> {
       return;
     }
 
+    // Reset selection state
+    selectedDismissalMethod = null;
+    selectedFielder = null;
+
+    // Show Record Wicket modal first
+    _showRecordWicketDialog();
+  }
+
+  void _showRecordWicketDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                constraints: const BoxConstraints(maxWidth: 400),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header with title and close button
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Record Wicket',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close, color: Colors.red),
+                          onPressed: () => Navigator.pop(context),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    
+                    // Dismissal Method Section
+                    const Text(
+                      'Dismissal Method',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    
+                    // Grid of dismissal methods
+                    GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                        childAspectRatio: 2.5,
+                      ),
+                      itemCount: dismissalMethods.length,
+                      itemBuilder: (context, index) {
+                        final method = dismissalMethods[index];
+                        final isSelected = selectedDismissalMethod == method;
+                        
+                        return GestureDetector(
+                          onTap: () {
+                            setModalState(() {
+                              selectedDismissalMethod = method;
+                            });
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: isSelected ? Colors.blue : Colors.grey.shade300,
+                                width: isSelected ? 2 : 1,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                              color: isSelected ? Colors.blue.shade50 : Colors.white,
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Radio<String>(
+                                  value: method,
+                                  groupValue: selectedDismissalMethod,
+                                  onChanged: (value) {
+                                    setModalState(() {
+                                      selectedDismissalMethod = value;
+                                    });
+                                  },
+                                  activeColor: Colors.blue,
+                                ),
+                                Text(
+                                  method,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    
+                    const SizedBox(height: 24),
+                    
+                    // Select Fielder Section
+                    const Text(
+                      'Select Fielder',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    
+                    // Fielder Dropdown
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: DropdownButton<String>(
+                        value: selectedFielder,
+                        hint: const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 12),
+                          child: Text('Select Fielder'),
+                        ),
+                        isExpanded: true,
+                        underline: const SizedBox(),
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        items: allBatsmen.map((fielder) {
+                          return DropdownMenuItem<String>(
+                            value: fielder,
+                            child: Text(fielder),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setModalState(() {
+                            selectedFielder = value;
+                          });
+                        },
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 24),
+                    
+                    // Record Wicket Button
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: selectedDismissalMethod != null && selectedFielder != null
+                            ? () {
+                                // Check if we need to show next batsman before recording
+                                bool shouldShowNextBatsman = wickets < 9;
+                                _recordWicket();
+                                Navigator.pop(context);
+                                // Show next batsman selection after recording wicket (if not all out)
+                                if (shouldShowNextBatsman) {
+                                  _showNextBatsmanDialog();
+                                }
+                              }
+                            : null,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          elevation: 0,
+                        ),
+                        child: const Text(
+                          'Record Wicket',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _recordWicket() {
     String outgoingBatsman = isOnStrike ? striker : nonStriker;
 
     setState(() {
@@ -225,7 +441,7 @@ class _ScorePageState extends State<ScorePage> {
         lastSixBalls.removeAt(0);
       }
 
-      usedBatsmen.add(outgoingBatsman); // ✅ Move inside setState
+      usedBatsmen.add(outgoingBatsman);
 
       if (balls == 6) {
         overs += 1;
@@ -235,51 +451,35 @@ class _ScorePageState extends State<ScorePage> {
       }
     });
 
-    // ✅ Only show dialog if not all out
-    if (wickets < 10) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Select Next Batsman'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: allBatsmen.map((player) {
-                bool isDisabled = usedBatsmen.contains(player);
-                return ListTile(
-                  title: Text(
-                    player,
-                    style: TextStyle(
-                      color: isDisabled ? Colors.grey : Colors.black,
-                    ),
-                  ),
-                  onTap: isDisabled
-                      ? null
-                      : () {
-                          setState(() {
-                            if (isOnStrike) {
-                              striker = player;
-                            } else {
-                              nonStriker = player;
-                            }
-                            batsmanStats[player] = {'runs': 0, 'balls': 0};
-                            usedBatsmen.add(player);
-                          });
-                          Navigator.pop(context);
-                        },
-                );
-              }).toList(),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Cancel'),
-              ),
-            ],
-          );
-        },
-      );
-    }
+    // Store wicket details (dismissal method and fielder) for future use
+    debugPrint('Wicket recorded: $outgoingBatsman, Method: $selectedDismissalMethod, Fielder: $selectedFielder');
+  }
+
+  void _showNextBatsmanDialog() {
+    // Get available batsmen (not used yet)
+    final availableBatsmen = allBatsmen.where((player) => !usedBatsmen.contains(player)).toList();
+    
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return _NewBatsmanDialog(
+          availableBatsmen: availableBatsmen,
+          onConfirm: (selectedBatsman) {
+            setState(() {
+              if (isOnStrike) {
+                striker = selectedBatsman;
+              } else {
+                nonStriker = selectedBatsman;
+              }
+              batsmanStats[selectedBatsman] = {'runs': 0, 'balls': 0};
+              usedBatsmen.add(selectedBatsman);
+            });
+            Navigator.pop(context);
+          },
+        );
+      },
+    );
   }
 
   void addExtra(String extraType, [int additionalRuns = 0]) {
@@ -1433,6 +1633,134 @@ class _ScorePageState extends State<ScorePage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// New Batsman Dialog Widget
+class _NewBatsmanDialog extends StatefulWidget {
+  final List<String> availableBatsmen;
+  final Function(String) onConfirm;
+
+  const _NewBatsmanDialog({
+    required this.availableBatsmen,
+    required this.onConfirm,
+  });
+
+  @override
+  State<_NewBatsmanDialog> createState() => _NewBatsmanDialogState();
+}
+
+class _NewBatsmanDialogState extends State<_NewBatsmanDialog> {
+  String? selectedNewBatsman;
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        constraints: const BoxConstraints(maxWidth: 400),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header with title and close button
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'New Batsman',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close, color: Colors.red),
+                  onPressed: () => Navigator.pop(context),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            
+            // Instruction text
+            const Text(
+              'Select New Batsman',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 12),
+            
+            // Batsman Dropdown
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey.shade300),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: DropdownButton<String>(
+                value: selectedNewBatsman,
+                hint: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  child: Text('Select Batsman'),
+                ),
+                isExpanded: true,
+                underline: const SizedBox(),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                items: widget.availableBatsmen.map((player) {
+                  return DropdownMenuItem<String>(
+                    value: player,
+                    child: Text(player),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    selectedNewBatsman = value;
+                  });
+                },
+              ),
+            ),
+            
+            const SizedBox(height: 24),
+            
+            // Confirm Button
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: selectedNewBatsman != null
+                    ? () {
+                        if (selectedNewBatsman != null) {
+                          widget.onConfirm(selectedNewBatsman!);
+                        }
+                      }
+                    : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  elevation: 0,
+                ),
+                child: const Text(
+                  'Confirm',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -100,7 +100,13 @@ class _TossDetailsState extends State<TossDetails> {
                           width: double.infinity,
                           child: CustomNextButton(
                             onPressed: () {
-                              Navigator.pushNamed(context, '/players_selection');
+                              // Get totalOvers from previous route arguments
+                              final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+                              Navigator.pushNamed(
+                                context,
+                                '/players_selection',
+                                arguments: {'totalOvers': args?['totalOvers']},
+                              );
                             },
                             label: 'Next',
                           ),

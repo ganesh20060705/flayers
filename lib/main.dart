@@ -30,12 +30,21 @@ class MyApp extends StatelessWidget {
       routes: {
         '/home_page': (context) => HomePage(),
         '/new_match_details': (context) => const NewMatchPage(),
-        '/players_selection': (context) => const PlayersSelection(),
+        '/players_selection': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+          return const PlayersSelection();
+        },
         '/team_setup_page': (context) => TeamSetupScreen(),
         '/team_setup_page2': (context) => TeamSetupPage2(),
-        '/toss_details': (context) => TossDetails(),
+        '/toss_details': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+          return TossDetails();
+        },
         '/acc_page': (context) => AccountScreen(),
-        '/score_page': (context) => ScorePage(),
+        '/score_page': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+          return ScorePage(totalOvers: args?['totalOvers'] as int?);
+        },
       },
     );
   }
